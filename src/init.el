@@ -229,8 +229,6 @@
 (use-package transient
   :ensure t)
 (use-package magit
-    :ensure t
-    :after (transient meow)
-    :config
-    (meow-leader-define-key
-     '("g g" . magit)))
+  :ensure t
+  :after (transient meow)
+  :bind ("C-x g" . magit))
