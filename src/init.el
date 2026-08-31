@@ -403,3 +403,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package ghostel-comint
   :hook (after-init . ghostel-comint-global-mode))
+
+(use-package markdown-ts-mode
+  :ensure nil
+  :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'")
+  :config
+  (require 'markdown-ts-mode-x))
