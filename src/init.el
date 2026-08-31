@@ -71,6 +71,14 @@
   :custom
   (meow-use-clipboard t)
   :init
+  (defun dysthesis/split-window-below ()
+    "Split horizontally and select the new window"
+    (interactive)
+    (select-window (split-window-below)))
+  (defun dysthesis/split-window-right ()
+    "Split vertically and select the new window"
+    (interactive)
+    (select-window (split-window-right)))
   (defun dysthesis/meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
@@ -153,11 +161,27 @@
      '("z" . meow-pop-selection)
      '("'" . repeat)
      '("<escape>" . ignore))
+    ;; Consult bindings
     (meow-leader-define-key
      '("f" . consult-fd)
      '("i" . consult-imenu)
      '("b" . switch-to-buffer)
-     '("/" . consult-ripgrep)))
+     '("/" . consult-ripgrep))
+    ;; Pane navigation bindings
+    (meow-motion-overwrite-define-key
+     '("C-w" . dysthesis/split-window-below)
+     '("C-v" . dysthesis/split-window-right)
+     '("C-h" . windmove-left)
+     '("C-l" . windmove-right)
+     '("C-j" . windmove-down)
+     '("C-k" . windmove-up))
+    (meow-normal-define-key
+     '("C-w" . dysthesis/split-window-below)
+     '("C-v" . dysthesis/split-window-right)
+     '("C-h" . windmove-left)
+     '("C-l" . windmove-right)
+     '("C-j" . windmove-down)
+     '("C-k" . windmove-up)))
   :config
   (dysthesis/meow-setup)
   (meow-global-mode 1))
