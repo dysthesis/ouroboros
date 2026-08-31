@@ -236,3 +236,8 @@
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
+
+(use-package smartparens
+  :ensure t
+  :hook (prog-mode text-mode markdown-mode)
+  :config (require 'smartparens-config))
