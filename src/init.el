@@ -52,7 +52,6 @@
      `(fixed-pitch
        ((t (:family ,font-family
 		    :height 1.0)))))
-
     (add-to-list 'face-font-rescale-alist
 		 '("Atkinson Hyperlegible Next" . 1.2)))
   (add-to-list 'face-font-rescale-alist '("Atkinson Hyperlegible Next" . 1.2)))
@@ -330,16 +329,6 @@
 
 (use-package treesit-langs
   :commands treesit-langs-major-mode-setup)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(apheleia consult corfu ligature magit meow nerd-icons-corfu nix-mode
-	      orderless smartparens treesit-fold vertico))
- '(package-vc-selected-packages
-   '((modus-alabaster :url "https://github.com/dpassen/modus-alabaster"))))
 
 ;; This assumes you've installed the package via MELPA.
 (use-package ligature
