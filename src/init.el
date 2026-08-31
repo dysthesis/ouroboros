@@ -16,6 +16,8 @@
 
 (use-package emacs
   :init
+  (setq display-line-numbers-type 'relative)
+  (add-hook 'prog-mode-hook #'display-line-numbers-mode)
   ;; Disable bidirectional text scanning, since we almost always use English anyways.
   (setq-default bidi-display-reordering 'left-to-right
 		bidi-paragraph-direction 'left-to-right)
