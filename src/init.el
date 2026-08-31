@@ -221,11 +221,6 @@
   :after corfu
   :init (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
-(use-package transient
-  :ensure t
-  :defer t)
 (use-package magit
   :ensure t
-  :commands (magit magit-status)
-  :after (transient meow)
-  :bind ("C-x g" . magit))
+  :bind ("C-x g" . magit-status))
