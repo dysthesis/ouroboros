@@ -198,7 +198,7 @@
   :demand t
   :custom
   (corfu-auto t)
-  (corfu-auto-delay 0.1)
+  (corfu-auto-delay 0.2)
   :init (global-corfu-mode))
 
 (use-package nerd-icons-corfu
