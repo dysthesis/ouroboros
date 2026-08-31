@@ -39,10 +39,13 @@
   (menu-bar-mode -1)
   (let ((font-family "IosevkaCadmus Nerd Font")
 	(font-height 95))
-    (set-face-attribute 'default nil
-			:family font-family
-			:height font-height
-			:weight 'normal)
+    (set-face-attribute
+     'default nil
+     :font
+     (font-spec
+      :family "IosevkaCadmus Nerd Font"
+      :weight 'normal
+      :size 9.5))
 
     (custom-theme-set-faces
      'user
