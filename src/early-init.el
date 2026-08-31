@@ -27,5 +27,4 @@
 (add-to-list 'default-frame-alist
              '(font . "IosevkaCadmus Nerd Font-10"))
 
-;; Optional: benchmark this before retaining it.
 (setq package-quickstart t)

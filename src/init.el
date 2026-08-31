@@ -1,9 +1,10 @@
 ;;; init.el -*- lexical-binding: t; no-byte-compile: t -*-
 
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(unless (package-installed-p 'nerd-icons-corfu)
-  (package-refresh-contents))
+;; Enable MELPA for more packages
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/")
+             t)
 
 (use-package use-package
  :custom
