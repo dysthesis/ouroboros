@@ -35,14 +35,24 @@
   (set-fringe-mode 10)
   (setq-default line-spacing 0.2)
   (menu-bar-mode -1)
-  (let* ((font-size 10)
-	 (font-height (* font-size 10)))
-    (set-face-attribute 'default nil :font "IosevkaCadmus Nerd Font" :height font-height)
-    (set-fontset-font t nil (font-spec :size font-size :name "IosevkaCadmus Nerd Font"))
+  (let ((font-family "IosevkaCadmus Nerd Font")
+	(font-height 95))
+    (set-face-attribute 'default nil
+			:family font-family
+			:height font-height
+			:weight 'normal)
+
     (custom-theme-set-faces
      'user
-     `(variable-pitch ((t (:family "Atkinson Hyperlegible Next" :height ,font-height))))
-     `(fixed-pitch ((t (:family "IosevkaCadmus Nerd Font" :height ,font-height))))))
+     `(variable-pitch
+       ((t (:family "Atkinson Hyperlegible Next"
+		    :height ,font-height))))
+     `(fixed-pitch
+       ((t (:family ,font-family
+		    :height 1.0)))))
+
+    (add-to-list 'face-font-rescale-alist
+		 '("Atkinson Hyperlegible Next" . 1.2)))
   (add-to-list 'face-font-rescale-alist '("Atkinson Hyperlegible Next" . 1.2)))
 
 (use-package modus-alabaster
