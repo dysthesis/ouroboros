@@ -27,6 +27,8 @@
   ;; Don't render cursors in non-selected windows, it's a waste of compute
   (setq-default cursor-in-non-selected-windows nil)
   (setq highlight-nonselected-windows nil)
+  ;; Resize windows proportionally
+  (setq window-combination-resize t)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (tooltip-mode -1)
