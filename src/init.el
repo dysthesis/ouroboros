@@ -17,6 +17,10 @@
 
 (use-package emacs
   :init
+  ;; Disable bidirectional text scanning, since we almost always use English anyways.
+  (setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+  (setq bidi-inhibit-bpa t)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (tooltip-mode -1)
