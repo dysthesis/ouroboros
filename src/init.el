@@ -16,19 +16,18 @@
 	use-package-compute-statistics t))
 
 (use-package emacs
-  :demand t
   :init
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (tooltip-mode -1)
   (set-fringe-mode 10)
+  (setq-default line-spacing 0.2)
   (load-theme 'modus-vivendi :no-confirm)
   (menu-bar-mode -1)
-	(let* ((font-size 10)
-        (font-height (* font-size 10)))
+  (let* ((font-size 10)
+				 (font-height (* font-size 10)))
     (set-face-attribute 'default nil :font "IosevkaCadmus Nerd Font" :height font-height)
     (set-fontset-font t nil (font-spec :size font-size :name "IosevkaCadmus Nerd Font"))
-    (setq-default line-spacing 0.2)
     (custom-theme-set-faces
      'user
      `(variable-pitch ((t (:family "Atkinson Hyperlegible Next" :height ,font-height))))
