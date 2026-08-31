@@ -462,4 +462,14 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :config
   (require 'markdown-ts-mode-x))
 (use-package envrc
+  :ensure t
   :hook (after-init . envrc-global-mode))
+(use-package eglot
+  :defer t
+  :init
+  (defun eglot-ensure-local-only ()
+    "Enable Eglot only on local buffers."
+    (unless (file-remote-p default-directory) (eglot-ensure)))
+  :hook
+  (nix-mode . eglot-ensure-local-only)
+  (rust-ts-mode . eglot-ensure-local-only))
