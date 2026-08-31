@@ -243,5 +243,6 @@
   :ensure t)
 (use-package magit
   :ensure t
+  :commands (magit magit-status)
   :after (transient meow)
   :bind ("C-x g" . magit))
