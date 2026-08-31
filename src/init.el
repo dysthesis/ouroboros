@@ -56,11 +56,12 @@
 		    :height 1.0)))))
     (add-to-list 'face-font-rescale-alist
 		 '("Atkinson Hyperlegible Next" . 1.2)))
-  (add-to-list 'face-font-rescale-alist '("Atkinson Hyperlegible Next" . 1.2)))
+  (add-to-list 'face-font-rescale-alist
+	       '("Atkinson Hyperlegible Next" . 1.2)))
 
-(use-package modus-alabaster
+(use-package ouroboros
   :config
-  (load-theme 'modus-alabaster-dark :no-confirm))
+  (load-theme 'ouroboros-dark :no-confirm))
 
 (use-package evil
   :init

@@ -39,23 +39,6 @@
         "type": "github"
       }
     },
-    "modus-alabaster": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1788170597,
-        "narHash": "sha256-XWGoACSMKrTGq17T43Lhle04ZKmY/V8DyDjhMPlguNY=",
-        "owner": "dysthesis",
-        "repo": "minimal.el",
-        "rev": "6c304bce9319acbee4d98e384e49ffb8fe1ed766",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dysthesis",
-        "repo": "minimal.el",
-        "rev": "6c304bce9319acbee4d98e384e49ffb8fe1ed766",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1787900134,
@@ -103,12 +86,28 @@
         "type": "github"
       }
     },
+    "ouroboros": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788219215,
+        "narHash": "sha256-e6bZhgp5Ljf/PvTNfLSvhMrf+qoqcUpjBmbhrxu69yI=",
+        "owner": "dysthesis",
+        "repo": "ouroboros-theme",
+        "rev": "7995cbb3ed53ac10ef77cb822bd323910208a670",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dysthesis",
+        "repo": "ouroboros-theme",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "emacs-overlay": "emacs-overlay",
         "flake-parts": "flake-parts",
-        "modus-alabaster": "modus-alabaster",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "ouroboros": "ouroboros"
       }
     }
   },

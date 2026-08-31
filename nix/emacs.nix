@@ -91,10 +91,10 @@
           cp ${source} "$out/${name}"
         '';
 
-      modusAlabaster = epkgs.trivialBuild {
-        pname = "modus-alabaster";
-        version = "0.0.1-${inputs.modus-alabaster.shortRev}";
-        src = inputs.modus-alabaster;
+      ouroborosTheme = epkgs.trivialBuild rec {
+        pname = "ouroboros";
+        version = "0.0.1-${src.shortRev}";
+        src = inputs.ouroboros;
         packageRequires = [epkgs.modus-themes];
       };
 
@@ -122,7 +122,7 @@
         defaultInitFile = true;
         alwaysEnsure = true;
         override = _: _: {
-          modus-alabaster = modusAlabaster;
+          ouroboros = ouroborosTheme;
           use-package = builtinUsePackage;
         };
         extraEmacsPackages = _:
@@ -144,7 +144,7 @@
           passthru =
             (old.passthru or {})
             // {
-              inherit default earlyDefault grammarBundle grammars modusAlabaster;
+              inherit default earlyDefault grammarBundle grammars ouroborosTheme;
               unwrappedEmacs = emacs;
               withCpu = target:
                 mkEmacs {

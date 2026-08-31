@@ -23,8 +23,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    modus-alabaster = {
-      url = "github:dysthesis/minimal.el/6c304bce9319acbee4d98e384e49ffb8fe1ed766";
+    ouroboros = {
+      url = "github:dysthesis/ouroboros-theme";
       flake = false;
     };
   };
