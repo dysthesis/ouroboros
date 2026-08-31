@@ -72,6 +72,14 @@
   :custom
   (meow-use-clipboard t)
   :init
+  (defvar-keymap dysthesis/window-map
+    "s" #'dysthesis/split-window-below
+    "v" #'dysthesis/split-window-right
+    "h" #'windmove-left
+    "l" #'windmove-right
+    "j" #'windmove-down
+    "k" #'windmove-up
+    "c" #'delete-window)
   (defun dysthesis/split-window-below ()
     "Split horizontally and select the new window"
     (interactive)
@@ -169,20 +177,10 @@
      '("b" . switch-to-buffer)
      '("/" . consult-ripgrep))
     ;; Pane navigation bindings
-    (meow-motion-overwrite-define-key
-     '("C-w" . dysthesis/split-window-below)
-     '("C-v" . dysthesis/split-window-right)
-     '("C-h" . windmove-left)
-     '("C-l" . windmove-right)
-     '("C-j" . windmove-down)
-     '("C-k" . windmove-up))
     (meow-normal-define-key
-     '("C-w" . dysthesis/split-window-below)
-     '("C-v" . dysthesis/split-window-right)
-     '("C-h" . windmove-left)
-     '("C-l" . windmove-right)
-     '("C-j" . windmove-down)
-     '("C-k" . windmove-up)))
+     (cons "C-w" dysthesis/window-map))
+    (meow-motion-define-key
+     (cons "C-w" dysthesis/window-map)))
   :config
   (dysthesis/meow-setup)
   (meow-global-mode 1))
