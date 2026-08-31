@@ -21,6 +21,12 @@
   (setq-default bidi-display-reordering 'left-to-right
               bidi-paragraph-direction 'left-to-right)
   (setq bidi-inhibit-bpa t)
+  ;; Increase process output buffer. Modern LSPs send big responses, so a larger buffer
+  ;; means less read calls that Emacs has to make, at the cost of a slight memory usage bump.
+  (setq read-process-output-max (* 4 1024 1024)) ;; 4 MB
+  ;; Don't render cursors in non-selected windows, it's a waste of compute
+  (setq-default cursor-in-non-selected-windows nil)
+  (setq highlight-nonselected-windows nil)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
   (tooltip-mode -1)
