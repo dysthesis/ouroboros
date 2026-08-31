@@ -179,15 +179,30 @@
   :init
   (savehist-mode))
 
-;; Optionally use the `orderless' completion style.
 (use-package orderless
   :ensure t
   :demand t
+  :preface
+  (eval-when-compile
+    (require 'orderless))
   :custom
   (completion-styles '(orderless basic flex))
-  (completion-category-overrides '((file (styles partial-completion))))
-  (completion-category-defaults nil) ;; Disable defaults, use our settings
-  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
+  (completion-category-overrides
+   '((file (styles partial-completion))))
+  (completion-category-defaults nil)
+  (completion-pcm-leading-wildcard t)
+  :config
+  (defun dysthesis/orderless-fast-dispatch (word index total)
+    (and (= index 0)
+         (= total 1)
+         (length< word 4)
+         (cons 'orderless-literal-prefix word)))
+
+  (orderless-define-completion-style orderless-fast
+    (orderless-style-dispatchers
+     '(dysthesis/orderless-fast-dispatch))
+    (orderless-matching-styles
+     '(orderless-literal orderless-regexp))))
 
 (use-package consult
     :ensure t
@@ -212,20 +227,16 @@
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.2)
+  (corfu-popupinfo-delay '(0.5 . 0.2))
   :init
-  (defun dysthesis/orderless-fast-dispatch (word index total)
-    (and (= index 0)
-	 (= total 1)
-	 (length< word 4)
-	 (cons 'orderless-literal-prefix word)))
-  (orderless-define-completion-style orderless-fast
-    (orderless-style-dispatchers '(dysthesis/orderless-fast-dispatch))
-    (orderless-matching-styles '(orderless-literal orderless-regexp)))
   (defun dysthesis/corfu-completion ()
-    "Cheaper orderless ordering for corfu"
+    "Use cheaper Orderless matching for Corfu."
     (setq-local completion-styles '(orderless-fast basic)
-		completion-category-defaults nil
-		completion-category-overrides nil))
+                completion-category-defaults nil
+                completion-category-overrides nil))
+  :config
+  (corfu-popupinfo-mode t)
+  (corfu-history-mode t)
   (global-corfu-mode))
 
 (use-package nerd-icons-corfu
