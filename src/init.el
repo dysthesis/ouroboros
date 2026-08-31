@@ -154,7 +154,7 @@
   :custom
   (vertico-multiform-commands '((consult-imenu buffer indexed reverse)
 				(consult-ripgrep buffer reverse)
-				(t indexed reverse)))
+				(t reverse)))
   :init
   (vertico-multiform-mode)
   (vertico-mode))
