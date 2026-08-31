@@ -74,6 +74,81 @@
   :ensure t
   :config (evil-collection-init))
 
+(use-package general
+  :ensure t
+  :after evil
+  :config
+  ;; * Mode Keybindings
+  (general-define-key
+   :states 'normal
+   :keymaps 'emacs-lisp-mode-map
+   ;; or xref equivalent
+   "K" 'elisp-slime-nav-describe-elisp-thing-at-point)
+  ;; `general-def' can be used instead for `evil-define-key'-like syntax
+  (general-def 'normal emacs-lisp-mode-map
+    "K" 'elisp-slime-nav-describe-elisp-thing-at-point)
+
+  ;; * Prefix Keybindings
+  ;; :prefix can be used to prevent redundant specification of prefix keys
+  ;; again, variables are not necessary and likely not useful if you are only
+  ;; using a definer created with `general-create-definer' for the prefixes
+  ;; (defconst dysthesis/gleader "SPC")
+  ;; (defconst dysthesis/glocal-leader "SPC m")
+
+  (general-create-definer dysthesis/gleader-def
+    ;; :prefix dysthesis/gleader
+    :prefix "SPC")
+
+  (dysthesis/gleader-def 'normal
+    "." '(find-file :wk "Find file")
+    "TAB" '(comment-line :wk "Comment lines")
+    "p" '(:keymap project-prefix-map
+		  :package project
+		  :wk "+Project"))
+  (dysthesis/gleader-def 'normal
+    "f" '(:ignore t :wk "Find")
+    "f r" '(consult-recent-file :wk "Recent files")
+    "f f" '(consult-fd :wk "Consult fd")
+    "f g" '(consult-ripgrep :wk "Ripgrep search in files")
+    "f l" '(consult-line :wk "Find line")
+    "f i" '(consult-imenu :wk "Consult imenu"))
+  (dysthesis/gleader-def 'normal
+    "g" '(:ignore t :wk "Git")
+    "g g" '(magit-status :wk "Magit status"))
+  (dysthesis/gleader-def 'normal
+    "b" '(:ignore t :wk "Buffer Bookmarks")
+    "b b" '(consult-buffer :wk "Switch buffer")
+    "b k" '(kill-this-buffer :wk "Kill this buffer")
+    "b i" '(ibuffer :wk "Ibuffer")
+    "b n" '(next-buffer :wk "Next buffer")
+    "b p" '(previous-buffer :wk "Previous buffer")
+    "b r" '(revert-buffer :wk "Reload buffer")
+    "b j" '(consult-bookmark :wk "Bookmark jump"))
+  (dysthesis/gleader-def 'normal
+    "d" '(:ignore t :wk "Dired")
+    "d v" '(dired :wk "Open dired")
+    "d j" '(dired-jump :wk "Dired jump to current"))
+  (dysthesis/gleader-def 'normal
+    "e" '(:ignore t :wk "Eglot Evaluate")
+    "e e" '(eglot-reconnect :wk "Eglot Reconnect")
+    "e f" '(eglot-format :wk "Eglot Format")
+    "e l" '(consult-flymake :wk "Consult Flymake")
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e r" '(eval-region :wk "Evaluate elisp in region"))
+
+  ;; to prevent your leader keybindings from ever being overridden (e.g. an evil
+  ;; package may bind "SPC"), use :keymaps 'override
+  (dysthesis/gleader-def
+    :states 'normal
+    :keymaps 'override
+    "a" 'org-agenda)
+  ;; or
+  (dysthesis/gleader-def 'normal 'override
+    "a" 'org-agenda)
+  ;; * Settings
+  ;; change evil's search module after evil has been loaded (`setq' will not work)
+  (general-setq evil-search-module 'evil-search))
+
 (use-package vertico
   :ensure t
   :custom
