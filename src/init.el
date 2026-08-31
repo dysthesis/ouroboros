@@ -257,3 +257,91 @@
   :ensure t
   :hook (prog-mode markdown-mode)
   :config (apheleia-global-mode +1))
+
+(use-package treesit
+  :ensure nil
+  :demand t
+
+  :custom
+  (treesit-font-lock-level 4)
+
+  :config
+  ;; Prefer Tree-sitter implementations whenever both old and new
+  ;; major modes exist.
+  (dolist (mapping
+           '((sh-mode       . bash-ts-mode)
+             (c-mode        . c-ts-mode)
+             (c++-mode      . c++-ts-mode)
+             (c-or-c++-mode . c-or-c++-ts-mode)
+             (css-mode      . css-ts-mode)
+             (java-mode     . java-ts-mode)
+             (js-mode       . js-ts-mode)
+             (js-json-mode  . json-ts-mode)
+             (python-mode   . python-ts-mode)
+             (ruby-mode     . ruby-ts-mode)))
+    (add-to-list 'major-mode-remap-alist mapping))
+
+  ;; Languages for which the Tree-sitter mode is itself the natural
+  ;; file association.
+  (dolist (mapping
+           '(("\\.rs\\'"              . rust-ts-mode)
+             ("\\.go\\'"              . go-ts-mode)
+             ("/go\\.mod\\'"          . go-mod-ts-mode)
+             ("\\.ts\\'"              . typescript-ts-mode)
+             ("\\.tsx\\'"             . tsx-ts-mode)
+             ("\\.ya?ml\\'"           . yaml-ts-mode)
+             ("\\.toml\\'"            . toml-ts-mode)
+             ("\\.json\\'"            . json-ts-mode)
+             ("Dockerfile\\(?:\\..*\\)?\\'" . dockerfile-ts-mode)))
+    (add-to-list 'auto-mode-alist mapping)))
+
+(use-package treesit-fold
+  :ensure t
+  :hook
+  (after-init . global-treesit-fold-indicators-mode)
+  (treesit-fold-mode . treesit-fold-line-comment-mode))
+
+(use-package nix-mode
+  :ensure t
+  :mode "\\.nix\\'"
+  :hook (nix-mode . eglot-ensure))
+
+(use-package treesit-langs
+  :commands treesit-langs-major-mode-setup)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(apheleia consult corfu ligature magit meow nerd-icons-corfu nix-mode
+	      orderless smartparens treesit-fold vertico))
+ '(package-vc-selected-packages
+   '((modus-alabaster :url "https://github.com/dpassen/modus-alabaster"))))
+
+;; This assumes you've installed the package via MELPA.
+(use-package ligature
+  :ensure t
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\\\" "://"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
