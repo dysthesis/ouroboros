@@ -185,10 +185,10 @@
 (use-package vertico
   :ensure t
   :custom
-  (vertico-multiform-commands '((consult-imenu buffer indexed)
-				(consult-ripgrep buffer)
+  (vertico-multiform-commands '((consult-imenu buffer indexed reverse)
+				(consult-ripgrep buffer reverse)
 				(execute-extended-command unobtrusive)
-				(t reverse)))
+				(t indexed reverse)))
   :init
   (vertico-multiform-mode)
   (vertico-mode))
