@@ -1,4 +1,4 @@
-;;; init.el -*- lexical-binding: t; no-byte-compile: t -*-
+;;; init.el -*- lexical-binding: t; -*-
 
 (require 'package)
 ;; Enable MELPA for more packages
