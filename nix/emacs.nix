@@ -82,13 +82,7 @@
 
       runtimePackages = with pkgs; [
         fd
-        git
         ripgrep
-        direnv
-        nil
-        zls
-        rust-analyzer
-        vscode-extensions.vadimcn.vscode-lldb.adapter
       ];
 
       sourceWithName = name: source:
