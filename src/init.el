@@ -461,6 +461,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'")
   :config
   (require 'markdown-ts-mode-x))
+
+(use-package zig-mode
+  :ensure t
+  :mode ("\\.zig\\'"))
+
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
@@ -471,5 +476,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     "Enable Eglot only on local buffers."
     (unless (file-remote-p default-directory) (eglot-ensure)))
   :hook
+  (zig-mode . eglot-ensure-local-only)
   (nix-mode . eglot-ensure-local-only)
   (rust-ts-mode . eglot-ensure-local-only))
