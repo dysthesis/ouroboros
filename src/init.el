@@ -15,6 +15,7 @@
 
 (use-package emacs
   :init
+  (setq window-sides-vertical t) ;; Left and right side windows occupy full frame height
   (setq display-line-numbers-type 'relative)
   (add-hook 'prog-mode-hook #'display-line-numbers-mode)
   ;; Disable bidirectional text scanning, since we almost always use English anyways.
@@ -479,3 +480,131 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (zig-mode . eglot-ensure-local-only)
   (nix-mode . eglot-ensure-local-only)
   (rust-ts-mode . eglot-ensure-local-only))
+
+(use-package dape
+  :ensure t
+  :preface
+  (defun dysthesis/dape--codelldb-dir-default ()
+    "Compute the codelldb adapter directory from the environment."
+    (let ((dir (getenv "CODELLDB_DIR")))
+      (if (and dir (not (string= dir "")))
+          dir
+        (expand-file-name "debug-adapters" user-emacs-directory))))
+
+  (defcustom dysthesis/dape-codelldb-dir (dysthesis/dape--codelldb-dir-default)
+    "Directory containing the codelldb debug adapter."
+    :type 'directory)
+
+  (defun dysthesis/dape--codelldb-command ()
+    "Return codelldb from PATH."
+    (or (executable-find "codelldb")
+	(user-error "codelldb not found in PATH")))
+
+  (defun dysthesis/dape--refresh-codelldb-configs ()
+    "Refresh codelldb entries in `dape-configs`."
+    (when (boundp 'dape-configs)
+      (dolist (name '(codelldb-cc codelldb-rust))
+        (let ((cfg (alist-get name dape-configs)))
+          (when cfg
+            (setf (alist-get name dape-configs)
+                  (plist-put (copy-tree cfg)
+                             'command
+                             #'dysthesis/dape--codelldb-command)))))))
+
+  (defun dysthesis/dape-refresh-adapter-dir (&rest _)
+    "Refresh codelldb adapter settings from the current environment."
+    (setq dysthesis/dape-codelldb-dir (dysthesis/dape--codelldb-dir-default))
+    (dysthesis/dape--refresh-codelldb-configs))
+  (dysthesis/dape-refresh-adapter-dir)
+  (with-eval-after-load 'dape
+    (dysthesis/dape-refresh-adapter-dir))
+  ;; Keep `dape-adapter-dir` in sync when direnv updates environment vars.
+  (with-eval-after-load 'direnv
+    (advice-add 'direnv-update-directory-environment :after
+                #'dysthesis/dape-refresh-adapter-dir))
+  ;; By default dape shares the same keybinding prefix as `gud'
+  ;; If you do not want to use any prefix, set it to nil.
+  ;; (setq dape-key-prefix "\C-x\C-a")
+
+  :hook
+  ;; Save breakpoints on quit
+  (kill-emacs . dape-breakpoint-save)
+  ;; Load breakpoints on startup
+  (after-init . dape-breakpoint-load)
+
+  :custom
+  ;; Turn on global bindings for setting breakpoints with mouse
+  (dape-breakpoint-global-mode +1)
+
+  ;; Info buffers to the right
+  ;; (dape-buffer-window-arrangement 'right)
+  ;; Info buffers like gud (gdb-mi)
+  (dape-buffer-window-arrangement 'gud)
+  ;; (dape-info-hide-mode-line nil)
+
+
+  :config
+  (let ((common
+         `(ensure dape-ensure-command
+		  command-cwd dape-command-cwd
+		  command ,#'dysthesis/dape--codelldb-command
+		  port :autoport
+		  :type "lldb"
+		  :request "launch"
+		  :cwd "."
+		  :args []
+		  :stopOnEntry nil)))
+
+    (add-to-list
+     'dape-configs
+     `(codelldb-cc
+       modes (c-mode c-ts-mode c++-mode c++-ts-mode)
+       command-args ("--port" :autoport)
+       ,@common
+       :program "a.out"))
+    (add-to-list
+     'dape-configs
+     `(codelldb-zig
+       modes (zig-mode zig-ts-mode)
+       ensure dape-ensure-command
+       command-cwd dape-command-cwd
+       command ,#'dysthesis/dape--codelldb-command
+       command-args ("--port" :autoport)
+       port :autoport
+
+       :type "lldb"
+       :request "launch"
+       :cwd "."
+       :program
+       ,(lambda ()
+	  (file-name-concat
+	   "zig-out"
+	   "bin"
+	   (file-name-nondirectory
+            (directory-file-name (dape-cwd)))))
+       :args []
+       :stopOnEntry nil))
+    (add-to-list
+     'dape-configs
+     `(codelldb-rust
+       modes (rust-mode rust-ts-mode)
+       command-args
+       ("--port" :autoport
+        "--settings" "{\"sourceLanguages\":[\"rust\"]}")
+       ,@common
+       :program
+       ,(lambda ()
+          (file-name-concat
+           "target" "debug"
+           (file-name-nondirectory
+            (directory-file-name (dape-cwd))))))))
+  ;; Pulse source line (performance hit)
+  (add-hook 'dape-display-source-hook #'pulse-momentary-highlight-one-line)
+
+  ;; Kill compile buffer on build success
+  (add-hook 'dape-compile-hook #'kill-buffer))
+
+;; For a more ergonomic Emacs and `dape' experience
+(use-package repeat
+  :custom
+  (repeat-mode +1))
