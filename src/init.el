@@ -177,7 +177,13 @@
 
 (use-package vertico
   :ensure t
+  :custom
+  (vertico-multiform-commands '((consult-imenu buffer indexed)
+				(consult-ripgrep buffer)
+				(execute-extended-command unobtrusive)
+				(t reverse)))
   :init
+  (vertico-multiform-mode)
   (vertico-mode))
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
