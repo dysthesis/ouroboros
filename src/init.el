@@ -473,8 +473,12 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
+
 (use-package eglot
   :defer t
+  :custom 
+  (eglot-sync-connect nil) ;; Do not block emacs while connecting to LSP
+  (eglot-event-buffer-config '(:size 0 :format short)) ;; Disable event logging
   :init
   (defun eglot-ensure-local-only ()
     "Enable Eglot only on local buffers."
