@@ -289,7 +289,9 @@
   ;; Complete elisp in Org or Markdown mode
   (add-to-list 'completion-at-point-functions #'cape-elisp-block) 
   ;; Keyword/Snipet completion
-  (add-to-list 'completion-at-point-functions #'cape-keyword))
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  :config
+  (require 'cape-keyword))
 
 (use-package tempel
   :demand t
