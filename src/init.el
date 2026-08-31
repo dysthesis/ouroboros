@@ -6,40 +6,14 @@
              '("melpa" . "https://melpa.org/packages/")
              t)
 
-(use-package use-package
- :custom
-  ;; Don't automatically defer
-  (use-package-always-defer nil)
-  ;; Navigate use-package declarations w/imenu
-  (use-package-enable-imenu-support t)
-  ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
-  ;; to switch display modes.
-  (context-menu-mode t)
-  ;; Support opening new minibuffers from inside existing minibuffers.
-  (enable-recursive-minibuffers t)
-  ;; Hide commands in M-x which do not work in the current mode.  Vertico
-  ;; commands are hidden in normal buffers. This setting is useful beyond
-  ;; Vertico.
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  ;; Do not allow the cursor in the minibuffer prompt
-  (minibuffer-prompt-properties
-   '(read-only t cursor-intangible t face minibuffer-prompt))
-  ;; TAB cycle if there are only few candidates
-  ;; (completion-cycle-threshold 3)
-
-  ;; Enable indentation+completion using the TAB key.
-  ;; `completion-at-point' is often bound to M-TAB.
-  (tab-always-indent 'complete)
-
-  ;; Emacs 30 and newer: Disable Ispell completion function.
-  ;; Try `cape-dict' as an alternative.
-  (text-mode-ispell-word-completion nil)
-
-  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
-  ;; commands are hidden, since they are not used via M-x. This setting is
-  ;; useful beyond Corfu.
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  :config (load-theme 'modus-vivendi :no-confirm))
+(require 'use-package)
+(setq use-package-always-defer nil
+      use-package-enable-imenu-support t)
+(when init-file-debug
+  (setq use-package-verbose t
+	use-package-minimum-reported-time 0
+	use-package-expand-minimally nil
+	use-package-compute-statistics t))
 
 (use-package emacs
   :demand t
