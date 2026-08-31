@@ -46,6 +46,12 @@
      `(fixed-pitch ((t (:family "IosevkaCadmus Nerd Font" :height ,font-height))))))
   (add-to-list 'face-font-rescale-alist '("Atkinson Hyperlegible Next" . 1.2)))
 
+(use-package modus-alabaster
+  :vc (:url "https://github.com/dysthesis/minimal.el"
+	    :rev :newest)
+  :config
+  (load-theme 'modus-alabaster-dark :no-confirm))
+
 (use-package meow
   :ensure t
   :demand t
