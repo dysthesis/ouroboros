@@ -5,7 +5,6 @@
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/")
              t)
-
 (require 'use-package)
 (setq use-package-always-defer nil
       use-package-enable-imenu-support t)
@@ -19,7 +18,8 @@
   :init
   ;; Disable bidirectional text scanning, since we almost always use English anyways.
   (setq-default bidi-display-reordering 'left-to-right
-              bidi-paragraph-direction 'left-to-right)
+		bidi-paragraph-direction 'left-to-right)
+
   (setq bidi-inhibit-bpa t)
   ;; Increase process output buffer. Modern LSPs send big responses, so a larger buffer
   ;; means less read calls that Emacs has to make, at the cost of a slight memory usage bump.
@@ -37,7 +37,7 @@
   (load-theme 'modus-vivendi :no-confirm)
   (menu-bar-mode -1)
   (let* ((font-size 10)
-				 (font-height (* font-size 10)))
+	 (font-height (* font-size 10)))
     (set-face-attribute 'default nil :font "IosevkaCadmus Nerd Font" :height font-height)
     (set-fontset-font t nil (font-spec :size font-size :name "IosevkaCadmus Nerd Font"))
     (custom-theme-set-faces
@@ -205,20 +205,20 @@
      '(orderless-literal orderless-regexp))))
 
 (use-package consult
-    :ensure t
-    :functions (consult-xref consult-register-window consult-register-format)
-    :hook (completion-list-mode . consult-preview-at-point-mode)
-    :init
-    (setq register-preview-delay 0.5
-          register-preview-function #'consult-register-format)
+  :ensure t
+  :functions (consult-xref consult-register-window consult-register-format)
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :init
+  (setq register-preview-delay 0.5
+        register-preview-function #'consult-register-format)
 
-    (advice-add #'register-preview :override #'consult-register-window)
+  (advice-add #'register-preview :override #'consult-register-window)
 
-    (setq xref-show-xrefs-function #'consult-xref
-          xref-show-definitions-function #'consult-xref)
-    :config
-    ;; Accept VCS markers as project root markers
-    (setopt project-vc-extra-root-markers '(".projectile" ".git")))
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+  :config
+  ;; Accept VCS markers as project root markers
+  (setopt project-vc-extra-root-markers '(".projectile" ".git")))
 
 (use-package corfu
   :ensure t
@@ -252,3 +252,8 @@
   :ensure t
   :hook (prog-mode text-mode markdown-mode)
   :config (require 'smartparens-config))
+
+(use-package apheleia
+  :ensure t
+  :hook (prog-mode markdown-mode)
+  :config (apheleia-global-mode +1))
