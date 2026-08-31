@@ -1,5 +1,4 @@
 ;;; init.el -*- lexical-binding: t; -*-
-
 (require 'package)
 ;; Enable MELPA for more packages
 (add-to-list 'package-archives
@@ -165,6 +164,39 @@
   :config
   (marginalia-mode))
 
+(use-package which-key
+  :after (vertico)
+  :ensure t
+  :config
+  (setq which-key-show-early-on-C-h t
+	which-key-idle-delay 1e6 ; 11 days
+	which-key-idle-secondary-delay 0.05)
+  (which-key-mode))
+
+(use-package embark
+  :ensure t
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :ensure t
+  :after (:and embark consult)
+  :demand t ; only necessary if you have the hook below
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
   :init
@@ -235,6 +267,56 @@
   :after corfu
   :init (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
+(use-package cape
+  :ensure t
+  :after corfu
+  :functions (cape-keyword)
+  :init
+  ;; Path completion
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  ;; Complete elisp in Org or Markdown mode
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block) 
+  ;; Keyword/Snipet completion
+  (add-to-list 'completion-at-point-functions #'cape-keyword))
+
+(use-package tempel
+  :ensure t
+  ;; Require trigger prefix before template name when completing.
+  ;; :custom
+  ;; (tempel-trigger-prefix "<")
+
+  :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
+         ("M-*" . tempel-insert)
+	 (:map tempel-map
+	       ([backtab] . tempel-previous)
+	       ([tab] . tempel-next)))
+  :init
+
+  ;; Setup completion at point
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.
+    ;; `tempel-expand' only triggers on exact matches. Alternatively use
+    ;; `tempel-complete' if you want to see all matches, but then you
+    ;; should also configure `tempel-trigger-prefix', such that Tempel
+    ;; does not trigger too often when you don't expect it. NOTE: We add
+    ;; `tempel-expand' *before* the main programming mode Capf, such
+    ;; that it will be tried first.
+    (setq-local completion-at-point-functions
+                (cons #'tempel-expand
+                      completion-at-point-functions)))
+
+  (add-hook 'conf-mode-hook 'tempel-setup-capf)
+  (add-hook 'prog-mode-hook 'tempel-setup-capf)
+  (add-hook 'text-mode-hook 'tempel-setup-capf)
+
+  ;; Optionally make the Tempel templates available to Abbrev,
+  ;; either locally or globally. `expand-abbrev' is bound to C-x '.
+  (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+  (global-tempel-abbrev-mode))
+
+(use-package tempel-collection
+  :ensure t
+  :after tempel)
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
