@@ -10,12 +10,6 @@
  :custom
   ;; Don't automatically defer
   (use-package-always-defer nil)
-  ;; Report loading details
-  (use-package-verbose t)
-  ;; This is really helpful for profiling
-  (use-package-minimum-reported-time 0)
-  ;; Expand normally
-  (use-package-expand-minimally nil)
   ;; Navigate use-package declarations w/imenu
   (use-package-enable-imenu-support t)
   ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
