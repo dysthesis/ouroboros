@@ -180,10 +180,6 @@
   (dysthesis/meow-setup)
   (meow-global-mode 1))
 
-(custom-set-faces
- '(fixed-pitch ((t (:family "IosevkaCadmus Nerd Font" :height 100))))
- '(variable-pitch ((t (:family "Atkinson Hyperlegible Next" :height 100)))))
-
 (use-package vertico
   :ensure t
   :custom
