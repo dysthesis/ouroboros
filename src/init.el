@@ -4,6 +4,7 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (unless (package-installed-p 'nerd-icons-corfu)
   (package-refresh-contents))
+
 (use-package use-package
  :custom
   ;; Don't automatically defer
@@ -162,20 +163,8 @@
   (meow-global-mode 1))
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(fixed-pitch ((t (:family "IosevkaCadmus Nerd Font" :height 100))))
  '(variable-pitch ((t (:family "Atkinson Hyperlegible Next" :height 100)))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(consult corfu meow meow-tree-sitter modus-alabaster nerd-icons-corfu
-	     orderless)))
 
 (use-package vertico
   :ensure t
