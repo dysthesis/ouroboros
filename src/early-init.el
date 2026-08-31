@@ -26,5 +26,6 @@
 (add-to-list 'default-frame-alist '(right-fringe . 10))
 (add-to-list 'default-frame-alist
              '(font . "IosevkaCadmus Nerd Font-10"))
-
+;; Precompute package activation info, speeds up package.el if many
+;; packages are installed.
 (setq package-quickstart t)
