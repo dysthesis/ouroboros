@@ -11,7 +11,6 @@
         "x86_64-linux"
         "aarch64-linux"
         "aarch64-darwin"
-        "x86_64-darwin"
       ];
     };
 
@@ -22,6 +21,11 @@
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    modus-alabaster = {
+      url = "github:dysthesis/minimal.el/6c304bce9319acbee4d98e384e49ffb8fe1ed766";
+      flake = false;
     };
   };
 }

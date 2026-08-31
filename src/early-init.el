@@ -1,5 +1,7 @@
 ;;; early-init.el -*- lexical-binding: t; -*-
 
+(setq package-enable-at-startup nil)
+
 ;; Preserve the normal interactive GC policy.
 (defvar dysthesis--gc-cons-threshold gc-cons-threshold)
 (defvar dysthesis--gc-cons-percentage gc-cons-percentage)
@@ -30,6 +32,3 @@
 (add-to-list 'default-frame-alist '(right-fringe . 10))
 (add-to-list 'default-frame-alist
              '(font . "IosevkaCadmus Nerd Font-10"))
-;; Precompute package activation info, speeds up package.el if many
-;; packages are installed.
-(setq package-quickstart t)

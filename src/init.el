@@ -1,10 +1,8 @@
 ;;; init.el -*- lexical-binding: t; -*-
-(require 'package)
-;; Enable MELPA for more packages
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/")
-             t)
 (require 'use-package)
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(with-eval-after-load 'package
+  (setq package-archives nil))
 (setq use-package-always-defer nil
       use-package-enable-imenu-support t)
 (when init-file-debug
@@ -14,6 +12,7 @@
 	use-package-compute-statistics t))
 
 (use-package emacs
+  :ensure nil
   :init
   (setq window-sides-vertical t) ;; Left and right side windows occupy full frame height
   (setq display-line-numbers-type 'relative)
@@ -60,13 +59,10 @@
   (add-to-list 'face-font-rescale-alist '("Atkinson Hyperlegible Next" . 1.2)))
 
 (use-package modus-alabaster
-  :vc (:url "https://github.com/dysthesis/minimal.el"
-	    :rev :newest)
   :config
   (load-theme 'modus-alabaster-dark :no-confirm))
 
 (use-package evil
-  :ensure t
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
@@ -74,11 +70,14 @@
 
 (use-package evil-collection
   :after evil
-  :ensure t
   :config (evil-collection-init))
 
 (use-package general
-  :ensure t
+  :preface
+  (eval-and-compile
+    (require 'general)
+    (general-create-definer dysthesis/gleader-def
+      :prefix "SPC"))
   :after evil
   :config
   ;; * Mode Keybindings
@@ -97,10 +96,6 @@
   ;; using a definer created with `general-create-definer' for the prefixes
   ;; (defconst dysthesis/gleader "SPC")
   ;; (defconst dysthesis/glocal-leader "SPC m")
-
-  (general-create-definer dysthesis/gleader-def
-    ;; :prefix dysthesis/gleader
-    :prefix "SPC")
 
   (dysthesis/gleader-def 'normal
     "." '(find-file :wk "Find file")
@@ -153,24 +148,30 @@
   (general-setq evil-search-module 'evil-search))
 
 (use-package vertico
-  :ensure t
+  :config
+  (vertico-mode))
+
+(use-package vertico-multiform
+  :ensure nil
+  :after vertico
   :custom
   (vertico-multiform-commands '((consult-imenu buffer indexed reverse)
 				(consult-ripgrep buffer reverse)
 				(t reverse)))
-  :init
-  (vertico-multiform-mode)
-  (vertico-mode))
+  :config
+  (require 'vertico-buffer)
+  (require 'vertico-indexed)
+  (require 'vertico-reverse)
+  (vertico-multiform-mode))
 
 (use-package marginalia
-  :ensure t
   :after vertico
   :config
   (marginalia-mode))
 
 (use-package which-key
+  :ensure nil
   :after (vertico)
-  :ensure t
   :config
   (setq which-key-show-early-on-C-h t
 	which-key-idle-delay 1e6 ; 11 days
@@ -178,7 +179,6 @@
   (which-key-mode))
 
 (use-package embark
-  :ensure t
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
@@ -195,7 +195,6 @@
                  (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
-  :ensure t
   :after (:and embark consult)
   :demand t ; only necessary if you have the hook below
   :hook
@@ -203,11 +202,11 @@
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
+  :ensure nil
   :init
   (savehist-mode))
 
 (use-package orderless
-  :ensure t
   :demand t
   :preface
   (eval-when-compile
@@ -232,7 +231,7 @@
      '(orderless-literal orderless-regexp))))
 
 (use-package consult
-  :ensure t
+  :demand t
   :functions (consult-xref consult-register-window consult-register-format)
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
@@ -244,11 +243,12 @@
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
   :config
+  (require 'consult-flymake)
+  (require 'consult-imenu)
   ;; Accept VCS markers as project root markers
   (setopt project-vc-extra-root-markers '(".projectile" ".git")))
 
 (use-package corfu
-  :ensure t
   :demand t
   :hook (corfu-mode . dysthesis/corfu-completion)
   :custom
@@ -262,17 +262,25 @@
                 completion-category-defaults nil
                 completion-category-overrides nil))
   :config
-  (corfu-popupinfo-mode t)
-  (corfu-history-mode t)
   (global-corfu-mode))
 
+(use-package corfu-popupinfo
+  :ensure nil
+  :after corfu
+  :config
+  (corfu-popupinfo-mode t))
+
+(use-package corfu-history
+  :ensure nil
+  :after corfu
+  :config
+  (corfu-history-mode t))
+
 (use-package nerd-icons-corfu
-  :ensure t
   :after corfu
   :init (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package cape
-  :ensure t
   :after corfu
   :functions (cape-keyword)
   :init
@@ -284,7 +292,7 @@
   (add-to-list 'completion-at-point-functions #'cape-keyword))
 
 (use-package tempel
-  :ensure t
+  :demand t
   ;; Require trigger prefix before template name when completing.
   ;; :custom
   ;; (tempel-trigger-prefix "<")
@@ -316,22 +324,19 @@
   ;; Optionally make the Tempel templates available to Abbrev,
   ;; either locally or globally. `expand-abbrev' is bound to C-x '.
   (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+  :config
   (global-tempel-abbrev-mode))
 
 (use-package tempel-collection
-  :ensure t
   :after tempel)
 (use-package magit
-  :ensure t
   :bind ("C-x g" . magit-status))
 
 (use-package smartparens
-  :ensure t
   :hook (prog-mode text-mode markdown-mode)
   :config (require 'smartparens-config))
 
 (use-package apheleia
-  :ensure t
   :hook (prog-mode markdown-mode)
   :config (apheleia-global-mode +1))
 
@@ -341,11 +346,6 @@
   :custom
   (treesit-font-lock-level 4)
   :config
-  (add-to-list
-   'treesit-language-source-alist
-   '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml"
-	  :commit "b733d3f5f5005890f324333dd57e1f0badec5c87")
-   t)
   ;; Prefer Tree-sitter implementations whenever both old and new
   ;; major modes exist.
   (dolist (mapping
@@ -376,22 +376,19 @@
     (add-to-list 'auto-mode-alist mapping)))
 
 (use-package treesit-fold
-  :ensure t
   :hook
-  (after-init . global-treesit-fold-indicators-mode)
   (treesit-fold-mode . treesit-fold-line-comment-mode))
 
+(use-package treesit-fold-indicators
+  :ensure nil
+  :hook (after-init . global-treesit-fold-indicators-mode))
+
 (use-package nix-mode
-  :ensure t
   :mode "\\.nix\\'"
   :hook (nix-mode . eglot-ensure))
 
-(use-package treesit-langs
-  :commands treesit-langs-major-mode-setup)
-
 ;; This assumes you've installed the package via MELPA.
 (use-package ligature
-  :ensure t
   :config
   ;; Enable the "www" ligature in every possible major mode
   (ligature-set-ligatures 't '("www"))
@@ -417,12 +414,10 @@
   (global-ligature-mode t))
 
 (use-package solaire-mode
-  :ensure t
   :demand t
   :config (solaire-global-mode +1))
 
 (use-package ghostel
-  :ensure t
   :bind (("C-x m" . ghostel)
          :map ghostel-semi-char-mode-map
          ("C-s"  . consult-line)
@@ -447,16 +442,18 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
 
 (use-package ghostel-eshell
+  :ensure nil
   :hook (eshell-load . ghostel-eshell-visual-command-mode))
 
 (use-package ghostel-compile
+  :ensure nil
   :hook (after-init . ghostel-compile-global-mode))
 
 (use-package ghostel-comint
+  :ensure nil
   :hook (after-init . ghostel-comint-global-mode))
 
 (use-package evil-ghostel
-  :ensure t
   :after (ghostel evil)
   :hook (ghostel-mode . evil-ghostel-mode))
 
@@ -467,14 +464,13 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (require 'markdown-ts-mode-x))
 
 (use-package zig-mode
-  :ensure t
   :mode ("\\.zig\\'"))
 
 (use-package envrc
-  :ensure t
   :hook (after-init . envrc-global-mode))
 
 (use-package eglot
+  :ensure nil
   :defer t
   :custom 
   (eglot-sync-connect nil) ;; Do not block emacs while connecting to LSP
@@ -489,7 +485,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (rust-ts-mode . eglot-ensure-local-only))
 
 (use-package dape
-  :ensure t
   :preface
   (defun dysthesis/dape--codelldb-dir-default ()
     "Compute the codelldb adapter directory from the environment."
@@ -613,5 +608,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 ;; For a more ergonomic Emacs and `dape' experience
 (use-package repeat
+  :ensure nil
   :custom
   (repeat-mode +1))
