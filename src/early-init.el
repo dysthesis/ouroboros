@@ -18,6 +18,10 @@
 ;; having its font, bars and fringes established.
 (setq frame-inhibit-implied-resize t)
 
+;; Skip fontification when typing to prevent micro-stutters. Especially
+;; useful when tree-sitter is enabled.
+(setq redisplay-skip-fontification-on-input t)
+
 ;; Establish geometry before the graphical frame is constructed.
 (add-to-list 'default-frame-alist '(menu-bar-lines . 0))
 (add-to-list 'default-frame-alist '(tool-bar-lines . 0))
