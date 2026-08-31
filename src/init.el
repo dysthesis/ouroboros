@@ -154,11 +154,16 @@
   :custom
   (vertico-multiform-commands '((consult-imenu buffer indexed reverse)
 				(consult-ripgrep buffer reverse)
-				(execute-extended-command unobtrusive)
 				(t indexed reverse)))
   :init
   (vertico-multiform-mode)
   (vertico-mode))
+
+(use-package marginalia
+  :ensure t
+  :after vertico
+  :config
+  (marginalia-mode))
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
