@@ -22,6 +22,7 @@
   (tool-bar-mode -1)
   (tooltip-mode -1)
   (set-fringe-mode 10)
+  (load-theme 'modus-vivendi :no-confirm)
   (menu-bar-mode -1)
 	(let* ((font-size 10)
         (font-height (* font-size 10)))
