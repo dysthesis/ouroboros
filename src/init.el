@@ -196,10 +196,25 @@
 (use-package corfu
   :ensure t
   :demand t
+  :hook (corfu-mode . dysthesis/corfu-completion)
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.2)
-  :init (global-corfu-mode))
+  :init
+  (defun dysthesis/orderless-fast-dispatch (word index total)
+    (and (= index 0)
+	 (= total 1)
+	 (length< word 4)
+	 (cons 'orderless-literal-prefix word)))
+  (orderless-define-completion-style orderless-fast
+    (orderless-style-dispatchers '(dysthesis/orderless-fast-dispatch))
+    (orderless-matching-styles '(orderless-literal orderless-regexp)))
+  (defun dysthesis/corfu-completion ()
+    "Cheaper orderless ordering for corfu"
+    (setq-local completion-styles '(orderless-fast basic)
+		completion-category-defaults nil
+		completion-category-overrides nil))
+  (global-corfu-mode))
 
 (use-package nerd-icons-corfu
   :ensure t
