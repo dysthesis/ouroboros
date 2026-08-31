@@ -338,7 +338,9 @@
 
 (use-package apheleia
   :hook (prog-mode markdown-mode)
-  :config (apheleia-global-mode +1))
+  :config
+  (push '(alejandra . ("alejandra")) apheleia-formatters)
+  (setf (alist-get 'nix-mode apheleia-mode-alist) '(alejandra)))
 
 (use-package treesit
   :ensure nil
