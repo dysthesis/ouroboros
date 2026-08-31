@@ -280,11 +280,14 @@
 (use-package treesit
   :ensure nil
   :demand t
-
   :custom
   (treesit-font-lock-level 4)
-
   :config
+  (add-to-list
+   'treesit-language-source-alist
+   '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml"
+	  :commit "b733d3f5f5005890f324333dd57e1f0badec5c87")
+   t)
   ;; Prefer Tree-sitter implementations whenever both old and new
   ;; major modes exist.
   (dolist (mapping
