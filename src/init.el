@@ -505,6 +505,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :custom 
   (eglot-sync-connect nil) ;; Do not block emacs while connecting to LSP
   (eglot-event-buffer-config '(:size 0 :format short)) ;; Disable event logging
+  (eglot-cache-session-completions t)
+  (eglot-advertise-cancellation t)
+  (eglot-code-action-indications nil) ;; avoid another periodic lsp request competing with completion
   :init
   (defun eglot-ensure-local-only ()
     "Enable Eglot only on local buffers."
