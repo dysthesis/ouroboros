@@ -14,6 +14,7 @@
 (use-package emacs
   :ensure nil
   :init
+  (setq backup-directory-alist `(("." . "~/.cache/saves")))
   (setq window-sides-vertical t) ;; Left and right side windows occupy full frame height
   (setq display-line-numbers-type 'relative)
   (add-hook 'prog-mode-hook #'display-line-numbers-mode)
