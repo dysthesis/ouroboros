@@ -498,21 +498,9 @@
 (use-package treesit-fold
   :preface
   (defconst dysthesis/treesit-function-like-type-regexp
-    "Regexp matching Tree-sitter nodes representing function-like constructs."
     (concat
      (regexp-opt
-      '("function_definition"
-	"function_declaration"
-	"function_item"
-	"method_definition"
-	"method_declaration"
-	"constructor_definition"
-	"constructor_declaration"
-	"destructor_definition"
-	"destructor_declaration"
-	"lambda_expression"
-	"closure_expression"
-	"function"
+      '("function"
         "method"
         "constructor"
         "destructor"
@@ -521,7 +509,8 @@
         "procedure"
         "subroutine"
         "macro"))
-     "\\|\\`fn\\(?:[_-]?\\(?:decl\\(?:aration\\)?\\|def\\(?:inition\\)?\\|item\\)\\)\\'"))
+     "\\|\\`fn\\(?:[_-]?\\(?:decl\\(?:aration\\)?\\|def\\(?:inition\\)?\\|item\\)\\)\\'")
+    "Regexp matching Tree-sitter nodes representing function-like constructs.")
 
   (defun dysthesis/treesit-function-like-node-p (node)
     "Return non-nil when NODE represents a function-like construct."
@@ -552,33 +541,7 @@ others make only its body/block foldable."
       (goto-char (treesit-node-start node))
       (> (treesit-node-end node)
          (line-end-position))))
-  (defun dysthesis/treesit-fold-c-family-function-bodies ()
-    "Fold C/C++ function and lambda bodies on buffer creation."
-    (when (and (treesit-parser-list)
-               (memq major-mode '(c-ts-mode c++-ts-mode)))
-      ;; Ensure folding is active before creating overlays.
-      (unless treesit-fold-mode
-	(treesit-fold-mode 1))
 
-      (let* ((lang (if (eq major-mode 'c++-ts-mode) 'cpp 'c))
-             (root (treesit-buffer-root-node lang))
-             (query
-              (if (eq lang 'cpp)
-                  '((function_definition
-                     body: (compound_statement) @body)
-                    (lambda_expression
-                     body: (compound_statement) @body))
-		'((function_definition
-                   body: (compound_statement) @body)))))
-
-	(let ((treesit-fold-indicators-mode nil)
-              (treesit-fold-on-fold-hook nil))
-          (dolist (capture (treesit-query-capture root query))
-            (treesit-fold-close (cdr capture))))
-
-	(when (and (bound-and-true-p treesit-fold-indicators-mode)
-                   (fboundp 'treesit-fold-indicators-refresh))
-          (treesit-fold-indicators-refresh)))))
   (defun dysthesis/treesit-fold-function-bodies ()
     "Fold every function-like body in the current Tree-sitter buffer.
 
@@ -674,8 +637,6 @@ which characters disappear."
       nil nil 'center))
   :hook
   ((treesit-fold-mode . treesit-fold-line-comment-mode)
-   (c-ts-mode . dysthesis/treesit-fold-c-family-function-bodies)
-   (c++-ts-mode . dysthesis/treesit-fold-c-family-function-bodies)
    (treesit-fold-mode . dysthesis/treesit-fold-function-bodies)))
 
 (use-package treesit-fold-indicators
