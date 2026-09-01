@@ -512,6 +512,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (defun eglot-ensure-local-only ()
     "Enable Eglot only on local buffers."
     (unless (file-remote-p default-directory) (eglot-ensure)))
+  (with-eval-after-load 'cape
+    (add-to-list 'completion-category-overrides
+		 '(eglot-capf (styles basic))))
   :hook
   (zig-mode . eglot-ensure-local-only)
   (nix-mode . eglot-ensure-local-only)
