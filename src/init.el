@@ -230,19 +230,7 @@
   (completion-category-overrides
    '((file (styles partial-completion))))
   (completion-category-defaults nil)
-  (completion-pcm-leading-wildcard t)
-  :config
-  (defun dysthesis/orderless-fast-dispatch (word index total)
-    (and (= index 0)
-         (= total 1)
-         (length< word 4)
-         (cons 'orderless-literal-prefix word)))
-
-  (orderless-define-completion-style orderless-fast
-    (orderless-style-dispatchers
-     '(dysthesis/orderless-fast-dispatch))
-    (orderless-matching-styles
-     '(orderless-literal orderless-regexp))))
+  (completion-pcm-leading-wildcard t))
 
 (use-package consult
   :demand t
@@ -262,19 +250,23 @@
   ;; Accept VCS markers as project root markers
   (setopt project-vc-extra-root-markers '(".projectile" ".git")))
 
+(use-package nucleo-completion
+  :config
+  (nucleo-completion-ensure-module)
+
+  (add-to-list
+   'completion-category-overrides
+   '(eglot-capf
+     (styles nucleo basic))))
+
 (use-package corfu
   :demand t
-  :hook (corfu-mode . dysthesis/corfu-completion)
   :custom
   (corfu-auto t)
-  (corfu-auto-delay 0.2)
+  (corfu-auto-delay 0.05)
+  (corfu-count 10)
   (corfu-popupinfo-delay '(0.5 . 0.2))
-  :init
-  (defun dysthesis/corfu-completion ()
-    "Use cheaper Orderless matching for Corfu."
-    (setq-local completion-styles '(orderless-fast basic)
-                completion-category-defaults nil
-                completion-category-overrides nil))
+  (corfu-sort-override-function nil)
   :config
   (global-corfu-mode))
 
@@ -512,9 +504,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (defun eglot-ensure-local-only ()
     "Enable Eglot only on local buffers."
     (unless (file-remote-p default-directory) (eglot-ensure)))
-  (with-eval-after-load 'cape
-    (add-to-list 'completion-category-overrides
-		 '(eglot-capf (styles basic))))
   :hook
   (zig-mode . eglot-ensure-local-only)
   (nix-mode . eglot-ensure-local-only)
