@@ -481,6 +481,96 @@
     (add-to-list 'auto-mode-alist mapping)))
 
 (use-package treesit-fold
+  :preface
+  (defconst dysthesis/treesit-function-like-type-regexp
+    (concat
+     (regexp-opt
+      '("function"
+        "method"
+        "constructor"
+        "destructor"
+        "lambda"
+        "closure"
+        "procedure"
+        "subroutine"
+        "macro"))
+     "\\|\\`fn\\(?:[_-]?\\(?:decl\\(?:aration\\)?\\|def\\(?:inition\\)?\\|item\\)\\)\\'")
+    "Regexp matching Tree-sitter nodes representing function-like constructs.")
+
+  (defun dysthesis/treesit-function-like-node-p (node)
+    "Return non-nil when NODE represents a function-like construct."
+    (when node
+      (let ((case-fold-search t))
+        (string-match-p
+         dysthesis/treesit-function-like-type-regexp
+         (treesit-node-type node)))))
+
+  (defun dysthesis/treesit-function-fold-node-p (node)
+    "Return non-nil when foldable NODE is a function or its body.
+
+Some grammars make the whole function the foldable node, while
+others make only its body/block foldable."
+    (or
+     ;; Python, Ruby, Elisp, Haskell, etc. may make the function node
+     ;; itself the foldable thing.
+     (dysthesis/treesit-function-like-node-p node)
+
+     ;; Rust, C, C++, Go, Java, JavaScript, etc. generally make the
+     ;; body/block foldable instead.
+     (dysthesis/treesit-function-like-node-p
+      (treesit-node-parent node))))
+
+  (defun dysthesis/treesit-multiline-node-p (node)
+    "Return non-nil when NODE extends beyond its starting line."
+    (save-excursion
+      (goto-char (treesit-node-start node))
+      (> (treesit-node-end node)
+         (line-end-position))))
+
+  (defun dysthesis/treesit-fold-function-bodies ()
+    "Fold every function-like body in the current Tree-sitter buffer.
+
+Only consider nodes already supported by `treesit-fold', so its
+language-specific range functions continue to determine exactly
+which characters disappear."
+    (when (and (bound-and-true-p treesit-fold-mode)
+               (treesit-parser-list))
+      (when-let* ((fold-ranges
+                   (alist-get major-mode treesit-fold-range-alist))
+                  (root
+                   (treesit-buffer-root-node)))
+        (let* ((patterns
+                (seq-mapcat
+                 (lambda (fold-range)
+                   `((,(car fold-range)) @fold))
+                 fold-ranges))
+               (query
+                (treesit-query-compile
+                 (treesit-node-language root)
+                 patterns))
+               (nodes
+                (treesit-query-capture root query))
+               ;; Avoid refreshing the gutter once per function.
+               (refresh-indicators
+                (bound-and-true-p treesit-fold-indicators-mode)))
+
+          (let ((treesit-fold-indicators-mode nil)
+                (treesit-fold-on-fold-hook nil))
+            (save-excursion
+              (dolist (capture nodes)
+                (let ((node (cdr capture)))
+                  (when
+                      (and
+                       (dysthesis/treesit-function-fold-node-p node)
+                       ;; Match `treesit-fold-close-all': don't bother
+                       ;; folding constructs entirely on one line.
+                       (dysthesis/treesit-multiline-node-p node))
+                    (treesit-fold-close node))))))
+
+          (when (and refresh-indicators
+                     (fboundp 'treesit-fold-indicators-refresh))
+            (treesit-fold-indicators-refresh))))))
+
   :custom
   ;; Show how much code disappeared.
   (treesit-fold-line-count-show t)
@@ -531,7 +621,8 @@
        #b00001000]
       nil nil 'center))
   :hook
-  (treesit-fold-mode . treesit-fold-line-comment-mode))
+  ((treesit-fold-mode . treesit-fold-line-comment-mode)
+   (treesit-fold-mode . dysthesis/treesit-fold-function-bodies)))
 
 (use-package treesit-fold-indicators
   :ensure nil
