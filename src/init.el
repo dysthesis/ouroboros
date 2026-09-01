@@ -1208,8 +1208,47 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package typst-ts-mode
   :mode "\\.typ\\'"
   :custom
-  (typst-ts-watch-options "--open")
+  (typst-ts-watch-options '("--open" "zathura"))
+  (typst-ts-enable-raw-blocks-highlight t) 
   (typst-ts-mode-grammar-location (expand-file-name "tree-sitter/libtree-sitter-typst.so" user-emacs-directory))
   (typst-ts-mode-enable-raw-blocks-highlight t)
   :config
+  (defun dysthesis/typst-open-pdf ()
+    "Open the PDF corresponding to the current Typst source."
+    (interactive)
+    (unless buffer-file-name
+      (user-error "Current buffer is not visiting a file"))
+    (let ((pdf (concat
+		(file-name-sans-extension buffer-file-name)
+		".pdf")))
+      (unless (file-exists-p pdf)
+	(user-error "PDF has not been generated yet: %s" pdf))
+      (find-file-other-window pdf)))
+  (define-key typst-ts-mode-map
+              (kbd "C-c C-p")
+              #'dysthesis/typst-open-pdf)
   (keymap-set typst-ts-mode-map "C-c C-c" #'typst-ts-tmenu))
+
+(use-package websocket)
+
+(with-eval-after-load 'eglot
+  (with-eval-after-load 'typst-ts-mode
+    (add-to-list 'eglot-server-programs
+                 `((typst-ts-mode) .
+                   ,(eglot-alternatives `(,typst-ts-lsp-download-path
+                                          "tinymist"
+                                          "typst-lsp"))))))
+
+(setq-default
+ eglot-workspace-configuration
+ '(:tinymist
+   (:exportPdf "onType"
+	       :outputPath "$root/$dir/$name")))
+
+(use-package pdf-tools
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :hook
+  (pdf-view-mode . auto-revert-mode))
+
+(setq auto-revert-verbose nil
+      auto-revert-interval 0.5)
