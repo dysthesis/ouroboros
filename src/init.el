@@ -753,3 +753,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
   :config
   (vertico-prescient-mode 1))
+
+(use-package gcmh
+  :demand
+  :config
+  (gcmh-mode 1))
