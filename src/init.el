@@ -347,9 +347,85 @@
 
 (use-package diff-hl
   :init
-  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (set-fringe-mode 8)
+  (setq-default fringes-outside-margins t)
+
+  :custom
+  (diff-hl-draw-borders nil)
+  (diff-hl-side 'left)
+
+  ;; more responsive updates.
+  (diff-hl-show-staged-changes nil)
+
   :config
+  (defun dysthesis/diff-hl-define-thin-bitmap (&rest _)
+    (let* ((scale
+            (if (and (boundp 'text-scale-mode-amount)
+                     (numberp text-scale-mode-amount))
+                (expt text-scale-mode-step text-scale-mode-amount)
+              1))
+           (spacing
+            (or (and (display-graphic-p)
+                     (default-value 'line-spacing))
+                0))
+           (total-spacing
+            (pcase spacing
+              ((pred numberp) spacing)
+              (`(,above . ,below) (+ above below))))
+           (h (+ (ceiling (* (frame-char-height) scale))
+                 (if (floatp total-spacing)
+                     (truncate
+                      (* (frame-char-height) total-spacing))
+                   total-spacing)))
+           (w (min
+               (frame-parameter
+                nil
+                (intern (format "%s-fringe" diff-hl-side)))
+               diff-hl-bmp-max-width)))
+
+      (when (zerop w)
+        (setq w diff-hl-bmp-max-width))
+
+      (define-fringe-bitmap
+        'diff-hl-bmp-middle
+        (make-vector
+         h
+         (string-to-number
+          (let ((half-w (1- (/ w 2))))
+            (concat
+             (make-string half-w ?1)
+             (make-string (- w half-w) ?0)))
+          2))
+        nil nil 'center)))
+
+  (advice-add #'diff-hl-define-bitmaps
+              :after
+              #'dysthesis/diff-hl-define-thin-bitmap)
+
+  (defun dysthesis/diff-hl-bitmap-from-type (type _pos)
+    (if (eq type 'delete)
+        'diff-hl-bmp-delete
+      'diff-hl-bmp-middle))
+
+  (setq diff-hl-fringe-bmp-function
+        #'dysthesis/diff-hl-bitmap-from-type)
+
+  (defun dysthesis/diff-hl-transparent-faces (&rest _)
+    (dolist (face '(diff-hl-insert
+                    diff-hl-delete
+                    diff-hl-change))
+      (set-face-background face nil)))
+
+  (dysthesis/diff-hl-transparent-faces)
+
+  (add-hook 'enable-theme-functions
+            #'dysthesis/diff-hl-transparent-faces)
+
+  (add-hook 'magit-pre-refresh-hook
+            #'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook
+            #'diff-hl-magit-post-refresh)
+
   (global-diff-hl-mode))
 
 (use-package smartparens
