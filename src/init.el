@@ -171,6 +171,13 @@
   :config
   (vertico-mode))
 
+(use-package nerd-icons-completion
+  :after marginalia
+  :config
+  (nerd-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook
+            #'nerd-icons-completion-marginalia-setup))
+
 (use-package vertico-multiform
   :ensure nil
   :after vertico
