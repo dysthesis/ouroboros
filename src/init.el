@@ -764,7 +764,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :hook
   (zig-mode . eglot-ensure-local-only)
   (nix-mode . eglot-ensure-local-only)
-  (rust-ts-mode . eglot-ensure-local-only))
+  (rust-ts-mode . eglot-ensure-local-only)
+  (typst-ts-mode . eglot-ensure-local-only))
 
 (use-package dape
   :preface
@@ -1223,7 +1224,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 		".pdf")))
       (unless (file-exists-p pdf)
 	(user-error "PDF has not been generated yet: %s" pdf))
-      (find-file-other-window pdf)))
+      (display-buffer (find-file-noselect pdf))))
   (define-key typst-ts-mode-map
               (kbd "C-c C-p")
               #'dysthesis/typst-open-pdf)
