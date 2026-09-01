@@ -14,6 +14,21 @@
 (use-package emacs
   :ensure nil
   :init
+  ;; Better scrolling
+  (setq scroll-conservatively 20
+	scroll-margin 3
+	hscroll-margin 2
+	hscroll-step 1
+	scroll-preserve-screen-position t
+	auto-window-vscroll nil
+	scroll-error-top-bottom t
+	fast-but-imprecise-scrolling t
+	scroll-up-aggressively 0.01
+	scroll-down-aggressively 0.01
+	isearch-allow-scroll 'unlimited
+	comint-scroll-to-bottom-on-input t
+	comint-scroll-to-bottom-on-output nil)
+  (pixel-scroll-precision-mode 1)
   (setq backup-directory-alist `(("." . "~/.cache/saves")))
   (setq window-sides-vertical t) ;; Left and right side windows occupy full frame height
   (setq display-line-numbers-type 'relative)
