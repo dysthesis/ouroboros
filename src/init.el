@@ -353,6 +353,13 @@
   :after magit
   :custom (auth-sources '("~/.authinfo.gpg")))
 
+(use-package diff-hl
+  :init
+  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  :config
+  (global-diff-hl-mode))
+
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode)
   :config (require 'smartparens-config))
