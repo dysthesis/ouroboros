@@ -481,6 +481,55 @@
     (add-to-list 'auto-mode-alist mapping)))
 
 (use-package treesit-fold
+  :custom
+  ;; Show how much code disappeared.
+  (treesit-fold-line-count-show t)
+  (treesit-fold-line-count-format "  … %d lines  … ")
+
+  ;; Keep the gutter implementation cheap.
+  (treesit-fold-indicators-render-method 'partial)
+
+  ;; Use the right fringe if the left is occupied by Git/diff markers.
+  (treesit-fold-indicators-fringe 'right-fringe)
+
+  :config
+  (set-face-attribute
+   'treesit-fold-replacement-face nil
+   :inherit 'shadow
+   :foreground "#5a5a5a"
+   :background 'unspecified
+   :box nil
+   :weight 'light)
+
+  (set-face-attribute
+   'treesit-fold-replacement-mouse-face nil
+   :inherit 'highlight
+   :foreground 'unspecified
+   :box nil)
+
+  ;; Make fold structure itself subdued.
+  (set-face-attribute
+   'treesit-fold-fringe-face nil
+   :inherit 'shadow)
+
+  (with-eval-after-load 'treesit-fold-indicators
+    (define-fringe-bitmap
+      'treesit-fold-indicators-fr-plus
+      [#b00010000
+       #b00011000
+       #b00011100
+       #b00011000
+       #b00010000]
+      nil nil 'center)
+
+    (define-fringe-bitmap
+      'treesit-fold-indicators-fr-minus-tail
+      [#b00000000
+       #b00000000
+       #b00100010
+       #b00010100
+       #b00001000]
+      nil nil 'center))
   :hook
   (treesit-fold-mode . treesit-fold-line-comment-mode))
 
@@ -768,6 +817,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package rustic
   :mode ("\\.rs\\'" . rustic-mode)
+  :hook (rustic-mode . rust-ts-mode)
   :custom
   (rustic-lsp-client 'eglot))
 
