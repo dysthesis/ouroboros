@@ -55,15 +55,15 @@
   (set-selection-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
   (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
-  (let ((font-family "IosevkaCadmus Nerd Font")
-	(font-height 95))
+  (let ((font-family "IosevkaCadmusEmacs Nerd Font")
+	(font-height 130))
     (set-face-attribute
      'default nil
      :font
      (font-spec
-      :family "IosevkaCadmus Nerd Font"
+      :family "IosevkaCadmusEmacs Nerd Font"
       :weight 'normal
-      :size 9.5))
+      :size 13))
 
     (custom-theme-set-faces
      'user
@@ -74,9 +74,9 @@
        ((t (:family ,font-family
 		    :height 1.0)))))
     (add-to-list 'face-font-rescale-alist
-		 '("Atkinson Hyperlegible Next" . 1.2)))
+		 '("Atkinson Hyperlegible Next" . 1.1)))
   (add-to-list 'face-font-rescale-alist
-	       '("Atkinson Hyperlegible Next" . 1.2)))
+	       '("Atkinson Hyperlegible Next" . 1.1)))
 
 (use-package ouroboros
   :config

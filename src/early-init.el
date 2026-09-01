@@ -31,4 +31,4 @@
 (add-to-list 'default-frame-alist '(left-fringe . 10))
 (add-to-list 'default-frame-alist '(right-fringe . 10))
 (add-to-list 'default-frame-alist
-             '(font . "IosevkaCadmus Nerd Font-9.5"))
+             '(font . "IosevkaCadmusEmacs Nerd Font:pixelsize=13"))
