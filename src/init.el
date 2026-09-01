@@ -288,6 +288,8 @@
   :config
   (corfu-history-mode t))
 
+(use-package nerd-icons)
+
 (use-package nerd-icons-corfu
   :after corfu
   :init (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
@@ -769,36 +771,251 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :custom
   (rustic-lsp-client 'eglot))
 
+(use-package nerd-icons)
+;; Autoload Nerd Icons only when the mode line actually needs them.
+;; This avoids loading nerd-icons while default.el is byte-compiled.
+(autoload 'nerd-icons-icon-for-buffer "nerd-icons" nil nil)
+(autoload 'nerd-icons-octicon "nerd-icons" nil nil)
+(autoload 'nerd-icons-faicon "nerd-icons" nil nil)
+
+
+;;;; Faces
+
+(defface dysthesis/mode-line-buffer
+  '((t (:inherit mode-line-buffer-id
+		 :weight bold)))
+  "Face for the current buffer.")
+
+(defface dysthesis/mode-line-secondary
+  '((t (:inherit shadow
+		 :slant italic)))
+  "Face for secondary mode-line information.")
+
+(defface dysthesis/mode-line-dim
+  '((t (:inherit shadow)))
+  "Face for low-priority mode-line information.")
+
+(defface dysthesis/mode-line-lsp
+  '((t (:inherit success
+		 :weight semi-bold)))
+  "Face for active LSP information.")
+
+(defface dysthesis/mode-line-evil-normal
+  '((t (:inherit mode-line-emphasis
+		 :weight bold)))
+  "Face for Evil normal state.")
+
+(defface dysthesis/mode-line-evil-insert
+  '((t (:inherit success
+		 :weight bold
+		 :underline t)))
+  "Face for Evil insert state.")
+
+(defface dysthesis/mode-line-evil-visual
+  '((t (:inherit font-lock-constant-face
+		 :weight bold
+		 :slant italic
+		 :underline t)))
+  "Face for Evil visual state.")
+
+(defface dysthesis/mode-line-evil-replace
+  '((t (:inherit error
+		 :weight bold
+		 :underline t)))
+  "Face for Evil replace state.")
+
+(defface dysthesis/mode-line-evil-operator
+  '((t (:inherit warning
+		 :weight bold
+		 :slant italic)))
+  "Face for Evil operator state.")
+
+(defface dysthesis/mode-line-evil-motion
+  '((t (:inherit shadow
+		 :weight bold
+		 :slant italic)))
+  "Face for Evil motion state.")
+
+(defface dysthesis/mode-line-evil-emacs
+  '((t (:inherit shadow
+		 :weight bold)))
+  "Face for Evil Emacs state.")
+
+
+;;;; Evil state
+
+(defface dysthesis/mode-line-git
+  '((((background dark))
+     (:foreground "#5a5a5a"))
+    (((background light))
+     (:foreground "#888888")))
+  "Face for Git information.")
+
+(defun dysthesis/mode-line-evil ()
+  (when (and (mode-line-window-selected-p)
+             (boundp 'evil-local-mode)
+             (symbol-value 'evil-local-mode)
+             (boundp 'evil-state))
+    (let ((state
+           (pcase (symbol-value 'evil-state)
+             ('normal
+              (propertize "NOR"
+                          'face 'dysthesis/mode-line-evil-normal))
+             ('insert
+              (propertize "INS"
+                          'face 'dysthesis/mode-line-evil-insert))
+             ('visual
+              (propertize "VIS"
+                          'face 'dysthesis/mode-line-evil-visual))
+             ('replace
+              (propertize "REP"
+                          'face 'dysthesis/mode-line-evil-replace))
+             ('operator
+              (propertize "OPR"
+                          'face 'dysthesis/mode-line-evil-operator))
+             ('motion
+              (propertize "MOT"
+                          'face 'dysthesis/mode-line-evil-motion))
+             ('emacs
+              (propertize "EMC"
+                          'face 'dysthesis/mode-line-evil-emacs))
+             (_ nil))))
+      (when state
+        (concat state "  ")))))
+
+;;;; Buffer
+
+(defun dysthesis/mode-line-buffer-icon ()
+  (condition-case nil
+      (concat (nerd-icons-icon-for-buffer) " ")
+    (error "")))
+
 (defun dysthesis/mode-line-buffer-state ()
   (cond
-   (buffer-read-only "󰌾")
-   ((buffer-modified-p) "●")
-   (t nil)))
+   (buffer-read-only
+    (condition-case nil
+        (concat
+         (propertize
+          (nerd-icons-octicon "nf-oct-lock")
+          'face 'dysthesis/mode-line-dim)
+         " ")
+      (error "RO ")))
 
+   ((buffer-modified-p)
+    (propertize "● "
+                'face 'warning))))
+
+
+;;;; Git / VC
 (defun dysthesis/mode-line-vc ()
-  (when vc-mode
-    (string-trim
-     (substring-no-properties vc-mode)
-     "[ Git:-]+"
-     "[ Git:-]+")))
+  (when (and (mode-line-window-selected-p)
+             vc-mode)
+    (let* ((raw
+            (string-trim
+             (substring-no-properties vc-mode)))
+           (branch
+            (replace-regexp-in-string
+             "\\`[^@!?:-]+[@!?:-]"
+             ""
+             raw)))
+      (condition-case nil
+          (concat
+           "  "
+           (propertize
+            (nerd-icons-octicon "nf-oct-git_branch")
+            'face 'dysthesis/mode-line-git)
+           " "
+           (propertize branch
+                       'face 'dysthesis/mode-line-git))
+        (error
+         (concat
+          "  "
+          (propertize branch
+                      'face 'dysthesis/mode-line-git)))))))
 
+;;;; Eglot
+
+(defun dysthesis/mode-line-eglot-render (symbol)
+  "Render Eglot mode-line component SYMBOL if available."
+  (when (boundp symbol)
+    (let ((rendered (format-mode-line symbol)))
+      (unless (equal rendered "")
+        rendered))))
+
+(defun dysthesis/mode-line-eglot ()
+  (when (and (mode-line-window-selected-p)
+             (boundp 'eglot--managed-mode)
+             (symbol-value 'eglot--managed-mode))
+
+    (let* ((session
+            (dysthesis/mode-line-eglot-render
+             'eglot-mode-line-session))
+
+           (error-state
+            (dysthesis/mode-line-eglot-render
+             'eglot-mode-line-error))
+
+           (pending
+            (dysthesis/mode-line-eglot-render
+             'eglot-mode-line-pending-requests))
+
+           (progress
+            (dysthesis/mode-line-eglot-render
+             'eglot-mode-line-progress))
+
+           (action
+            (dysthesis/mode-line-eglot-render
+             'eglot-mode-line-action-suggestion))
+
+           (status
+            (delq nil
+                  (list error-state
+                        pending
+                        progress
+                        action))))
+      (concat
+       ;; LSP icon.
+       (condition-case nil
+           (nerd-icons-faicon "nf-fa-code")
+         (error "LSP"))
+       " "
+       (propertize "LSP"
+                   'face 'dysthesis/mode-line-lsp)
+       (when (and session
+                  (not (equal session "")))
+         (concat
+          " "
+          (propertize
+           (substring-no-properties session)
+           'face 'dysthesis/mode-line-secondary)))
+       ;; Preserve Eglot's own faces for errors/progress/actions.
+       (when status
+         (concat
+          " "
+          (mapconcat #'identity status "/")))
+       "  "))))
+
+
+;;;; Mode line
 (setq-default
  mode-line-format
  '(" "
    (:eval
-    (when-let ((state (dysthesis/mode-line-buffer-state)))
-      (concat state " ")))
-
-   (:propertize "%b"
-                face mode-line-buffer-id)
-
+    (dysthesis/mode-line-evil))
    (:eval
-    (when-let ((branch (dysthesis/mode-line-vc)))
-      (concat "  " branch)))
-
+    (dysthesis/mode-line-buffer-state))
+   (:eval
+    (dysthesis/mode-line-buffer-icon))
+   (:propertize "%b"
+                face dysthesis/mode-line-buffer)
+   (:eval
+    (dysthesis/mode-line-vc))
    mode-line-format-right-align
-
-   mode-name
+   (:eval
+    (dysthesis/mode-line-eglot))
+   (:propertize mode-name
+                face dysthesis/mode-line-secondary)
    "  "
-   "%l:%c"
+   (:propertize "%l:%c"
+                face dysthesis/mode-line-dim)
    " "))
