@@ -89,11 +89,11 @@
     "ouroboros": {
       "flake": false,
       "locked": {
-        "lastModified": 1788225117,
-        "narHash": "sha256-tCuyvDTCfi4vPy3TsJGqSU3Bcwv6p7kjWDUdjkkQ+0M=",
+        "lastModified": 1788229537,
+        "narHash": "sha256-mauQ6t0ZHABMMzA8t1NWKfRVrjqivZtmP15hFqXa3SE=",
         "owner": "dysthesis",
         "repo": "ouroboros-theme",
-        "rev": "207714fbd816dd1e31d28ff6858d67e00aa0424b",
+        "rev": "f379cf0bc1976736e0d569459ee284adb57e7a12",
         "type": "github"
       },
       "original": {
