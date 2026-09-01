@@ -975,6 +975,14 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 
 ;;;; Faces
+(defun dysthesis/mode-line-major-mode ()
+  (condition-case nil
+      (concat
+       (nerd-icons-icon-for-mode major-mode)
+       " "
+       (format-mode-line mode-name))
+    (error
+     (format-mode-line mode-name))))
 
 (defface dysthesis/mode-line-buffer
   '((t (:inherit mode-line-buffer-id
@@ -1208,8 +1216,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
    mode-line-format-right-align
    (:eval
     (dysthesis/mode-line-eglot))
-   (:propertize mode-name
-                face dysthesis/mode-line-secondary)
+   (:eval
+    (propertize
+     (dysthesis/mode-line-major-mode)
+     'face 'dysthesis/mode-line-secondary))
    "  "
    (:propertize "%l:%c"
                 face dysthesis/mode-line-dim)
