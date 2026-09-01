@@ -178,6 +178,10 @@
   (add-hook 'marginalia-mode-hook
             #'nerd-icons-completion-marginalia-setup))
 
+(use-package nerd-icons-dired
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
 (use-package vertico-multiform
   :ensure nil
   :after vertico
