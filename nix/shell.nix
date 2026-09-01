@@ -23,7 +23,7 @@
         text = ''
           config_dir="''${EMACS_DEV_CONFIG:-$PWD/src}"
           gsettings list-schemas | grep -x org.gnome.desktop.interface
-          gsettings set org.gnome.desktop.interface font-hinting 'full'
+          gsettings set org.gnome.desktop.interface font-hinting 'slight'
           gsettings set org.gnome.desktop.interface font-antialiasing 'grayscale'
           settings get org.gnome.desktop.interface font-hinting
           gsettings get org.gnome.desktop.interface font-antialiasing
