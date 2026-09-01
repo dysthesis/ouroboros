@@ -34,6 +34,11 @@
   (tool-bar-mode -1)
   (tooltip-mode -1)
   (set-fringe-mode 10)
+  (setq-default fill-column 80)
+  (set-face-attribute 'fill-column-indicator nil
+                      :foreground "#717C7C" ; katana-gray
+                      :background "transparent")
+  (global-display-fill-column-indicator-mode 1)
   (setq-default line-spacing 0.2)
   (menu-bar-mode -1)
   (setq initial-scratch-message nil)
