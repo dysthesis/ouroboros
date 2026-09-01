@@ -182,6 +182,10 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
+(use-package nerd-icons-ibuffer
+  :hook
+  (ibuffer-mode . nerd-icons-ibuffer-mode))
+
 (use-package vertico-multiform
   :ensure nil
   :after vertico
