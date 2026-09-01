@@ -468,8 +468,7 @@
   ;; Languages for which the Tree-sitter mode is itself the natural
   ;; file association.
   (dolist (mapping
-           '(("\\.rs\\'"              . rust-ts-mode)
-             ("\\.go\\'"              . go-ts-mode)
+            '(("\\.go\\'"              . go-ts-mode)
              ("/go\\.mod\\'"          . go-mod-ts-mode)
              ("\\.ts\\'"              . typescript-ts-mode)
              ("\\.tsx\\'"             . tsx-ts-mode)
@@ -764,3 +763,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :demand
   :config
   (gcmh-mode 1))
+
+(use-package rustic
+  :mode ("\\.rs\\'" . rustic-mode)
+  :custom
+  (rustic-lsp-client 'eglot))
