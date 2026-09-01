@@ -39,6 +39,7 @@
   (setq initial-scratch-message nil)
   (defun display-startup-echo-area-message ()
     (message ""))
+  (defalias 'yes-or-no-p 'y-or-n-p)
   (let ((font-family "IosevkaCadmus Nerd Font")
 	(font-height 95))
     (set-face-attribute
