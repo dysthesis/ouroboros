@@ -621,3 +621,23 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :ensure nil
   :custom
   (repeat-mode +1))
+
+(use-package writeroom-mode
+  :commands (writeroom-mode)
+  :config (dysthesis/gleader-def 'normal
+	    "t w" '(writeroom-mode :wk "[T]oggle [W]riteroom mode")))
+(use-package kirigami
+  :custom
+  ;; Add Kirigami to the menu bar and context menu (`context-menu-mode').
+  (kirigami-show-menu-bar t)
+  (kirigami-show-context-menu t)
+  :config
+  ;; Configure Kirigami to replace the default Evil-mode folding key bindings
+  (with-eval-after-load 'evil
+    (define-key evil-normal-state-map "zo" 'kirigami-open-fold)
+    (define-key evil-normal-state-map "zO" 'kirigami-open-fold-rec)
+    (define-key evil-normal-state-map "zc" 'kirigami-close-fold)
+    (define-key evil-normal-state-map "za" 'kirigami-toggle-fold)
+    (define-key evil-normal-state-map "zr" 'kirigami-open-folds)
+    (define-key evil-normal-state-map "zm" 'kirigami-close-folds))
+  (kirigami-global-mode 1))
