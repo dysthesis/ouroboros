@@ -332,8 +332,13 @@
 
 (use-package tempel-collection
   :after tempel)
+
 (use-package magit
   :bind ("C-x g" . magit-status))
+
+(use-package forge
+  :after magit
+  :custom (auth-sources '("~/.authinfo.gpg")))
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode)
