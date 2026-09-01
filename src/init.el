@@ -36,6 +36,9 @@
   (set-fringe-mode 10)
   (setq-default line-spacing 0.2)
   (menu-bar-mode -1)
+  (setq initial-scratch-message nil)
+  (defun display-startup-echo-area-message ()
+    (message ""))
   (let ((font-family "IosevkaCadmus Nerd Font")
 	(font-height 95))
     (set-face-attribute
