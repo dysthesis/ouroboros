@@ -23,8 +23,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Emacs VC packages
     ouroboros = {
       url = "github:dysthesis/ouroboros-theme";
+      flake = false;
+    };
+    typst-ts-mode = {
+      url = "git+https://codeberg.org/meow_king/typst-ts-mode";
       flake = false;
     };
   };

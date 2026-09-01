@@ -107,7 +107,24 @@
         "emacs-overlay": "emacs-overlay",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs",
-        "ouroboros": "ouroboros"
+        "ouroboros": "ouroboros",
+        "typst-ts-mode": "typst-ts-mode"
+      }
+    },
+    "typst-ts-mode": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782317899,
+        "narHash": "sha256-6QUPLiEoKD64tozOm0KBvCdwCNMxcUpCVZu9qOEVosk=",
+        "ref": "refs/heads/develop",
+        "rev": "155bb36cff3afe701a0f6b57bd3fe5c9effaa314",
+        "revCount": 318,
+        "type": "git",
+        "url": "https://codeberg.org/meow_king/typst-ts-mode"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/meow_king/typst-ts-mode"
       }
     }
   },

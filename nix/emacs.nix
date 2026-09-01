@@ -6,6 +6,7 @@
   defaultTreeSitterGrammars = [
     "tree-sitter-bash"
     "tree-sitter-c"
+    "tree-sitter-typst"
     "tree-sitter-cpp"
     "tree-sitter-css"
     "tree-sitter-dockerfile"
@@ -98,6 +99,12 @@
         packageRequires = [epkgs.modus-themes];
       };
 
+      typstTsMode = epkgs.trivialBuild rec {
+        pname = "typst-ts-mode";
+        version = src.shortRev;
+        src = inputs.typst-ts-mode;
+      };
+
       builtinUsePackage = pkgs.runCommandLocal "emacs-builtin-use-package" {} ''
         mkdir -p "$out"
       '';
@@ -123,6 +130,7 @@
         alwaysEnsure = true;
         override = _: _: {
           ouroboros = ouroborosTheme;
+          typst-ts-mode = typstTsMode;
           use-package = builtinUsePackage;
         };
         extraEmacsPackages = _:
@@ -144,7 +152,14 @@
           passthru =
             (old.passthru or {})
             // {
-              inherit default earlyDefault grammarBundle grammars ouroborosTheme;
+              inherit
+                default
+                earlyDefault
+                grammarBundle
+                grammars
+                ouroborosTheme
+                typstTsMode
+                ;
               unwrappedEmacs = emacs;
               withCpu = target:
                 mkEmacs {

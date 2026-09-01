@@ -14,7 +14,11 @@
 (use-package emacs
   :ensure nil
   :init
+  ;; save on focus lost
+  ;; https://stackoverflow.com/q/1230245
+  (add-hook 'focus-out-hook (lambda () (interactive) (save-some-buffers t)))
   ;; Better scrolling
+  (setq user-emacs-directory "~/.local/state/ouroboros")
   (setq scroll-conservatively 20
 	scroll-margin 3
 	hscroll-margin 2
@@ -1200,3 +1204,12 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
    (:propertize "%l:%c"
                 face dysthesis/mode-line-dim)
    " "))
+
+(use-package typst-ts-mode
+  :mode "\\.typ\\'"
+  :custom
+  (typst-ts-watch-options "--open")
+  (typst-ts-mode-grammar-location (expand-file-name "tree-sitter/libtree-sitter-typst.so" user-emacs-directory))
+  (typst-ts-mode-enable-raw-blocks-highlight t)
+  :config
+  (keymap-set typst-ts-mode-map "C-c C-c" #'typst-ts-tmenu))
