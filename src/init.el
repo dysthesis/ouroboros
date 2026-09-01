@@ -641,3 +641,24 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (define-key evil-normal-state-map "zr" 'kirigami-open-folds)
     (define-key evil-normal-state-map "zm" 'kirigami-close-folds))
   (kirigami-global-mode 1))
+
+(use-package prescient
+  :custom
+  ;; Do not disturb the original candidate ordering merely because
+  ;; two candidates have identical Prescient scores.
+  (prescient-sort-length-enable nil)
+  :config
+  (prescient-persist-mode 1))
+
+(use-package vertico-prescient
+  :after (vertico prescient)
+  :custom
+  ;; Orderless remains responsible for matching.
+  (vertico-prescient-enable-filtering nil)
+  ;; Prescient contributes only adaptive sorting.
+  (vertico-prescient-enable-sorting t)
+  ;; Respect completion sources which supply their own ranking.
+  (vertico-prescient-override-sorting nil)
+
+  :config
+  (vertico-prescient-mode 1))
