@@ -468,7 +468,7 @@
   ;; Languages for which the Tree-sitter mode is itself the natural
   ;; file association.
   (dolist (mapping
-            '(("\\.go\\'"              . go-ts-mode)
+           '(("\\.go\\'"              . go-ts-mode)
              ("/go\\.mod\\'"          . go-mod-ts-mode)
              ("\\.ts\\'"              . typescript-ts-mode)
              ("\\.tsx\\'"             . tsx-ts-mode)
@@ -768,3 +768,37 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :mode ("\\.rs\\'" . rustic-mode)
   :custom
   (rustic-lsp-client 'eglot))
+
+(defun dysthesis/mode-line-buffer-state ()
+  (cond
+   (buffer-read-only "󰌾")
+   ((buffer-modified-p) "●")
+   (t nil)))
+
+(defun dysthesis/mode-line-vc ()
+  (when vc-mode
+    (string-trim
+     (substring-no-properties vc-mode)
+     "[ Git:-]+"
+     "[ Git:-]+")))
+
+(setq-default
+ mode-line-format
+ '(" "
+   (:eval
+    (when-let ((state (dysthesis/mode-line-buffer-state)))
+      (concat state " ")))
+
+   (:propertize "%b"
+                face mode-line-buffer-id)
+
+   (:eval
+    (when-let ((branch (dysthesis/mode-line-vc)))
+      (concat "  " branch)))
+
+   mode-line-format-right-align
+
+   mode-name
+   "  "
+   "%l:%c"
+   " "))
