@@ -129,6 +129,14 @@
   (general-def 'normal emacs-lisp-mode-map
     "K" 'elisp-slime-nav-describe-elisp-thing-at-point)
 
+  (general-def
+    :states 'normal
+    :keymaps 'override
+    "M-h" #'shrink-window-horizontally
+    "M-j" #'shrink-window
+    "M-k" #'enlarge-window
+    "M-l" #'enlarge-window-horizontally)
+
   ;; * Prefix Keybindings
   ;; :prefix can be used to prevent redundant specification of prefix keys
   ;; again, variables are not necessary and likely not useful if you are only
