@@ -107,6 +107,137 @@
   (setq evil-want-keybinding nil)
   :config (evil-mode 1))
 
+(use-package evil-textobj-tree-sitter
+  :after (evil treesit)
+
+  :custom
+  ;; Do not let `daf', `dil', etc. silently operate on the next semantic object
+  ;; when point is not currently inside one.
+  (evil-textobj-tree-sitter-use-next-if-not-within nil)
+
+  :config
+  (dolist (mapping
+           '((bash-ts-mode       . "bash")
+             (css-ts-mode        . "css")
+             (json-ts-mode       . "json")
+             (yaml-ts-mode       . "yaml")
+             (toml-ts-mode       . "toml")
+             (dockerfile-ts-mode . "dockerfile")
+             (typst-ts-mode      . "typst")
+             (nix-ts-mode        . "nix")
+             (zig-ts-mode        . "zig")))
+    (setf (alist-get
+           (car mapping)
+           evil-textobj-tree-sitter-major-mode-language-alist)
+          (cdr mapping)))
+
+  (defun dysthesis/evil-ts-c-or-c++-language ()
+    "Teach evil-textobj-tree-sitter the language of this C/C++ buffer."
+    (when-let* ((parser
+                 (and (boundp 'treesit-primary-parser)
+                      treesit-primary-parser))
+                (language
+                 (treesit-parser-language parser)))
+      ;; Do not mutate the global alist merely because this particular
+      ;; header was detected as C or C++.
+      (setq-local
+       evil-textobj-tree-sitter-major-mode-language-alist
+       (copy-tree
+        evil-textobj-tree-sitter-major-mode-language-alist))
+
+      (setf
+       (alist-get
+        'c-or-c++-ts-mode
+        evil-textobj-tree-sitter-major-mode-language-alist)
+       (symbol-name language))))
+
+  (add-hook
+   'c-or-c++-ts-mode-hook
+   #'dysthesis/evil-ts-c-or-c++-language)
+
+  ;; f   function    function + declaration/signature
+  ;; c   type/class  whole type/class declaration
+  ;; a   parameter   parameter including separator where available
+  ;; l   loop body   whole loop
+  ;; i   branch      whole conditional
+  ;; /   comment     comment/comment group
+  ;; e   entry       collection/member/binding entry
+  ;; t   test body   whole test
+
+  ;; Function / method / lambda.
+  (define-key
+   evil-inner-text-objects-map "f"
+   (evil-textobj-tree-sitter-get-textobj "function.inner"))
+
+  (define-key
+   evil-outer-text-objects-map "f"
+   (evil-textobj-tree-sitter-get-textobj "function.outer"))
+
+  ;; Class / struct / enum / trait / interface / impl / similar type.
+  (define-key
+   evil-inner-text-objects-map "c"
+   (evil-textobj-tree-sitter-get-textobj "class.inner"))
+
+  (define-key
+   evil-outer-text-objects-map "c"
+   (evil-textobj-tree-sitter-get-textobj "class.outer"))
+
+  ;; Function parameter, call argument, generic argument, etc.
+  (define-key
+   evil-inner-text-objects-map "a"
+   (evil-textobj-tree-sitter-get-textobj "parameter.inner"))
+
+  (define-key
+   evil-outer-text-objects-map "a"
+   (evil-textobj-tree-sitter-get-textobj "parameter.outer"))
+
+  ;; Loop.
+  (define-key
+   evil-inner-text-objects-map "l"
+   (evil-textobj-tree-sitter-get-textobj "loop.inner"))
+
+  (define-key
+   evil-outer-text-objects-map "l"
+   (evil-textobj-tree-sitter-get-textobj "loop.outer"))
+
+  ;; vii  -> select inner conditional
+  ;; dai  -> delete entire conditional
+  (define-key
+   evil-inner-text-objects-map "i"
+   (evil-textobj-tree-sitter-get-textobj "conditional.inner"))
+
+  (define-key
+   evil-outer-text-objects-map "i"
+   (evil-textobj-tree-sitter-get-textobj "conditional.outer"))
+
+  ;; "/" avoids stealing `c', which is much more useful for classes /
+  ;; structures.  Examples: vi/, da/, yi/.
+  (define-key
+   evil-inner-text-objects-map "/"
+   (evil-textobj-tree-sitter-get-textobj "comment.inner"))
+
+  (define-key
+   evil-outer-text-objects-map "/"
+   (evil-textobj-tree-sitter-get-textobj "comment.outer"))
+
+  (define-key
+   evil-inner-text-objects-map "e"
+   (evil-textobj-tree-sitter-get-textobj
+    ("entry.inner" "entry.outer")))
+
+  (define-key
+   evil-outer-text-objects-map "e"
+   (evil-textobj-tree-sitter-get-textobj "entry.outer"))
+
+  ;; Test declaration.
+  (define-key
+   evil-inner-text-objects-map "t"
+   (evil-textobj-tree-sitter-get-textobj "test.inner"))
+
+  (define-key
+   evil-outer-text-objects-map "t"
+   (evil-textobj-tree-sitter-get-textobj "test.outer")))
+
 (use-package evil-collection
   :after evil
   :config (evil-collection-init))
