@@ -764,6 +764,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :hook
   (zig-mode . eglot-ensure-local-only)
   (nix-mode . eglot-ensure-local-only)
+  (nael-mode . eglot-ensure-local-only)
   (rust-ts-mode . eglot-ensure-local-only)
   (typst-ts-mode . eglot-ensure-local-only))
 
@@ -1205,6 +1206,13 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
    (:propertize "%l:%c"
                 face dysthesis/mode-line-dim)
    " "))
+(use-package nael
+  :init
+  (require 'nael-autoloads)
+  :custom
+  (nael-prepare-lsp nil)
+  :hook
+  (nael-mode . abbrev-mode))
 
 (use-package typst-ts-mode
   :mode "\\.typ\\'"

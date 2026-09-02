@@ -39,22 +39,6 @@
         "type": "github"
       }
     },
-    "nael": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1773060800,
-        "narHash": "sha256-X3yw0pBgUN71TdPcEPznjq//U5X8P+zctik3nw11RSI=",
-        "ref": "refs/heads/release",
-        "rev": "c1d349746731bbff6bf1887c51eb7a1f3bea5c4c",
-        "revCount": 453,
-        "type": "git",
-        "url": "https://codeberg.org/mekeor/nael.git"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://codeberg.org/mekeor/nael.git"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1788179007,
@@ -122,7 +106,6 @@
       "inputs": {
         "emacs-overlay": "emacs-overlay",
         "flake-parts": "flake-parts",
-        "nael": "nael",
         "nixpkgs": "nixpkgs",
         "ouroboros": "ouroboros",
         "typst-ts-mode": "typst-ts-mode"

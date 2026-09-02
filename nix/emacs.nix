@@ -3,28 +3,29 @@
   lib,
   ...
 }: let
-  defaultTreeSitterGrammars = [
-    "tree-sitter-bash"
-    "tree-sitter-c"
-    "tree-sitter-typst"
-    "tree-sitter-cpp"
-    "tree-sitter-css"
-    "tree-sitter-dockerfile"
-    "tree-sitter-go"
-    "tree-sitter-gomod"
-    "tree-sitter-html"
-    "tree-sitter-java"
-    "tree-sitter-javascript"
-    "tree-sitter-json"
-    "tree-sitter-markdown"
-    "tree-sitter-markdown-inline"
-    "tree-sitter-python"
-    "tree-sitter-ruby"
-    "tree-sitter-rust"
-    "tree-sitter-toml"
-    "tree-sitter-tsx"
-    "tree-sitter-typescript"
-    "tree-sitter-yaml"
+  defaultTreeSitterGrammars = builtins.map (x: "tree-sitter-${x}") [
+    "bash"
+    "lean"
+    "c"
+    "typst"
+    "cpp"
+    "css"
+    "dockerfile"
+    "go"
+    "gomod"
+    "html"
+    "java"
+    "javascript"
+    "json"
+    "markdown"
+    "markdown-inline"
+    "python"
+    "ruby"
+    "rust"
+    "toml"
+    "tsx"
+    "typescript"
+    "yaml"
   ];
 
   mkPkgs = {
@@ -92,18 +93,17 @@
           cp ${source} "$out/${name}"
         '';
 
-      ouroborosTheme = epkgs.trivialBuild rec {
-        pname = "ouroboros";
-        version = "0.0.1-${src.shortRev}";
-        src = inputs.ouroboros;
-        packageRequires = [epkgs.modus-themes];
-      };
+      # Helper util to make it easier to build packages that aren't in melpa/elpa
+      mkExtraPkgs = pname: deps:
+        epkgs.trivialBuild rec {
+          inherit pname;
+          src = inputs.${pname};
+          version = "${src.shortRev}";
+          packageRequires = deps epkgs;
+        };
 
-      typstTsMode = epkgs.trivialBuild rec {
-        pname = "typst-ts-mode";
-        version = src.shortRev;
-        src = inputs.typst-ts-mode;
-      };
+      ouroborosTheme = mkExtraPkgs "ouroboros" (p: [p.modus-themes]);
+      typstTsMode = mkExtraPkgs "typst-ts-mode" (_: []);
 
       builtinUsePackage = pkgs.runCommandLocal "emacs-builtin-use-package" {} ''
         mkdir -p "$out"
