@@ -223,7 +223,7 @@
   (define-key
    evil-inner-text-objects-map "e"
    (evil-textobj-tree-sitter-get-textobj
-    ("entry.inner" "entry.outer")))
+     ("entry.inner" "entry.outer")))
 
   (define-key
    evil-outer-text-objects-map "e"
@@ -305,12 +305,13 @@
     "d v" '(dired :wk "Open dired")
     "d j" '(dired-jump :wk "Dired jump to current"))
   (dysthesis/gleader-def 'normal
-    "e" '(:ignore t :wk "Eglot Evaluate")
-    "e e" '(eglot-reconnect :wk "Eglot Reconnect")
-    "e f" '(eglot-format :wk "Eglot Format")
-    "e l" '(consult-flymake :wk "Consult Flymake")
-    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
-    "e r" '(eval-region :wk "Evaluate elisp in region"))
+    "c" '(:ignore t :wk "Eglot Evaluate")
+    "c e" '(eglot-reconnect :wk "Eglot Reconnect")
+    "c a" '(eglot-code-actions :wk "Code Actions")
+    "c f" '(eglot-format :wk "Format with LSP")
+    "c d" '(consult-flymake :wk "Consult Flymake")
+    "c b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "c r" '(eval-region :wk "Evaluate elisp in region"))
 
   ;; to prevent your leader keybindings from ever being overridden (e.g. an evil
   ;; package may bind "SPC"), use :keymaps 'override
@@ -525,6 +526,17 @@
 (use-package forge
   :after magit
   :custom (auth-sources '("~/.authinfo.gpg")))
+
+(use-package majutsu
+  :bind ("C-x j" . majutsu-log))
+
+(use-package hl-todo
+  :config
+  (setq hl-todo-keyword-faces
+	'(("TODO"   . "#FF0000")
+          ("FIXME"  . "#FF0000")
+          ("DEBUG"  . "#A020F0")
+          ("STUB"   . "#1E90FF"))))
 
 (use-package diff-hl
   :init
@@ -1400,3 +1412,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (setq auto-revert-verbose nil
       auto-revert-interval 0.5)
+
+(use-package neocaml
+  :ensure t)

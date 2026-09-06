@@ -28,6 +28,10 @@
       url = "github:dysthesis/ouroboros-theme";
       flake = false;
     };
+    majutsu = {
+      url = "github:0WD0/majutsu";
+      flake = false;
+    };
     typst-ts-mode = {
       url = "git+https://codeberg.org/meow_king/typst-ts-mode";
       flake = false;

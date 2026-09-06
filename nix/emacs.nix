@@ -6,6 +6,7 @@
   defaultTreeSitterGrammars = builtins.map (x: "tree-sitter-${x}") [
     "bash"
     "lean"
+    "ocaml"
     "c"
     "typst"
     "cpp"
@@ -32,24 +33,11 @@
     system,
     cpu ? null,
   }:
-    import inputs.nixpkgs (
-      {
-        overlays = [inputs.emacs-overlay.overlay];
-        config.allowUnfree = true;
-      }
-      // (
-        if cpu == null
-        then {inherit system;}
-        else {
-          localSystem = {
-            inherit system;
-            gcc.arch = cpu;
-            gcc.tune = cpu;
-          };
-        }
-      )
-    );
-
+    import inputs.nixpkgs {
+      inherit system;
+      overlays = [inputs.emacs-overlay.overlay];
+      config.allowUnfree = true;
+    };
   mkEmacs = {
     system,
     cpu ? null,
@@ -71,6 +59,10 @@
       pkgs = mkPkgs {inherit system cpu;};
       baseEmacs = pkgs.emacs-unstable-pgtk;
       emacs = baseEmacs.overrideAttrs (old: {
+        NIX_CFLAGS_COMPILE =
+          (old.NIX_CFLAGS_COMPILE or "")
+          + lib.optionalString (cpu != null)
+          " -march=${cpu} -mtune=${cpu}";
         postPatch =
           (old.postPatch or "")
           + lib.optionalString (cpu != null) ''
@@ -104,6 +96,15 @@
 
       ouroborosTheme = mkExtraPkgs "ouroboros" (p: [p.modus-themes]);
       typstTsMode = mkExtraPkgs "typst-ts-mode" (_: []);
+      majutsu = mkExtraPkgs "majutsu" (p:
+        with p; [
+          magit
+          magit-section
+          compat
+          transient
+          consult
+          plz
+        ]);
 
       builtinUsePackage = pkgs.runCommandLocal "emacs-builtin-use-package" {} ''
         mkdir -p "$out"
@@ -129,6 +130,7 @@
         defaultInitFile = true;
         alwaysEnsure = true;
         override = _: _: {
+          inherit majutsu;
           ouroboros = ouroborosTheme;
           typst-ts-mode = typstTsMode;
           use-package = builtinUsePackage;
@@ -159,6 +161,7 @@
                 grammars
                 ouroborosTheme
                 typstTsMode
+                majutsu
                 ;
               unwrappedEmacs = emacs;
               withCpu = target:

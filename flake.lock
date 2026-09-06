@@ -39,6 +39,22 @@
         "type": "github"
       }
     },
+    "majutsu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787562736,
+        "narHash": "sha256-QytNm1AXU1IdeAVoBDdkTIeZE7bOlg2Dfb3H8QOHZFI=",
+        "owner": "0WD0",
+        "repo": "majutsu",
+        "rev": "74371e921ba34532908e944f4dec0083f36a3ae4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "0WD0",
+        "repo": "majutsu",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1788179007,
@@ -106,6 +122,7 @@
       "inputs": {
         "emacs-overlay": "emacs-overlay",
         "flake-parts": "flake-parts",
+        "majutsu": "majutsu",
         "nixpkgs": "nixpkgs",
         "ouroboros": "ouroboros",
         "typst-ts-mode": "typst-ts-mode"
