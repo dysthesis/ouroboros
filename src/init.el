@@ -627,9 +627,22 @@
 
 (use-package apheleia
   :hook (prog-mode markdown-mode)
+
   :config
-  (push '(alejandra . ("alejandra")) apheleia-formatters)
-  (setf (alist-get 'nix-mode apheleia-mode-alist) '(alejandra)))
+  (setf
+   (alist-get 'alejandra apheleia-formatters)
+   '("alejandra")
+
+   (alist-get 'sqruff apheleia-formatters)
+   '("sqruff" "fix" "--parsing-errors"
+     (apheleia-formatters-locate-file "--config" ".sqruff")
+     "-")
+
+   (alist-get 'nix-mode apheleia-mode-alist)
+   '(alejandra)
+
+   (alist-get 'sql-mode apheleia-mode-alist)
+   '(sqruff)))
 
 (use-package treesit
   :ensure nil
@@ -664,6 +677,10 @@
              ("\\.json\\'"            . json-ts-mode)
              ("Dockerfile\\(?:\\..*\\)?\\'" . dockerfile-ts-mode)))
     (add-to-list 'auto-mode-alist mapping)))
+
+(use-package sql
+  :ensure nil
+  :mode ("\\.sql\\'" . sql-mode))
 
 (use-package treesit-fold
   :preface
@@ -917,7 +934,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (nix-mode . eglot-ensure-local-only)
   (nael-mode . eglot-ensure-local-only)
   (rust-ts-mode . eglot-ensure-local-only)
-  (typst-ts-mode . eglot-ensure-local-only))
+  (sql-mode . eglot-ensure-local-only)
+  (typst-ts-mode . eglot-ensure-local-only)
+  :config
+  (add-to-list 'eglot-server-programs '(sql-mode . ("sqls"))))
 
 (use-package dape
   :preface
