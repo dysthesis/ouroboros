@@ -102,6 +102,22 @@
         "type": "github"
       }
     },
+    "org-modern-indent": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784676792,
+        "narHash": "sha256-vQzYk5qejCBehpbxkMceOMsmeLyjnAstpezZw/ZR1jQ=",
+        "owner": "jdtsmith",
+        "repo": "org-modern-indent",
+        "rev": "86bd83ee1ad95f123810eb3b116beb543db1960a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jdtsmith",
+        "repo": "org-modern-indent",
+        "type": "github"
+      }
+    },
     "ouroboros": {
       "flake": false,
       "locked": {
@@ -124,6 +140,7 @@
         "flake-parts": "flake-parts",
         "majutsu": "majutsu",
         "nixpkgs": "nixpkgs",
+        "org-modern-indent": "org-modern-indent",
         "ouroboros": "ouroboros",
         "typst-ts-mode": "typst-ts-mode"
       }

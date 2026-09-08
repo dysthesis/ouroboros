@@ -14,6 +14,14 @@
 (use-package emacs
   :ensure nil
   :init
+  ;; Add frame borders and window dividers
+  (dolist (face '(window-divider
+                  window-divider-first-pixel
+                  window-divider-last-pixel))
+    (face-spec-reset-face face)
+    (set-face-foreground face (face-attribute 'default :background)))
+  (set-face-background 'fringe (face-attribute 'default :background))
+
   ;; save on focus lost
   ;; https://stackoverflow.com/q/1230245
   (add-hook 'focus-out-hook (lambda () (interactive) (save-some-buffers t)))
@@ -58,7 +66,7 @@
   (set-face-attribute 'fill-column-indicator nil
                       :foreground "#717C7C" ; katana-gray
                       :background "transparent")
-  (global-display-fill-column-indicator-mode 1)
+  (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode t)
   (setq-default line-spacing 0.2)
   (menu-bar-mode -1)
   (setq initial-scratch-message nil)
@@ -88,17 +96,17 @@
      'user
      `(variable-pitch
        ((t (:family "Atkinson Hyperlegible Next"
-		    :height ,font-height))))
+		    :height 135
+		    :weight normal))))
      `(fixed-pitch
        ((t (:family ,font-family
-		    :height 1.0)))))
-    (add-to-list 'face-font-rescale-alist
-		 '("Atkinson Hyperlegible Next" . 1.1)))
-  (add-to-list 'face-font-rescale-alist
-	       '("Atkinson Hyperlegible Next" . 1.1)))
+		    :height 1.0)))))))
 
 (use-package ouroboros
   :config
+  (modify-all-frames-parameters
+   '((right-divider-width . 2)
+     (internal-border-width . 20)))
   (load-theme 'ouroboros-dark :no-confirm))
 
 (use-package evil
@@ -862,7 +870,13 @@ which characters disappear."
 
 (use-package solaire-mode
   :demand t
-  :config (solaire-global-mode +1))
+  :config
+  (solaire-global-mode +1)
+  (set-face-attribute 'fringe nil
+                      :background "#000000")
+
+  (set-face-attribute 'solaire-fringe-face nil
+                      :background "#000000"))
 
 (use-package ghostel
   :bind (("C-x m" . ghostel)
@@ -1435,3 +1449,211 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package neocaml
   :ensure t)
+
+;;; Org-mode
+(use-package org-modern-indent
+  :after (org org-modern)
+  :hook (org-mode . org-modern-indent-mode))
+
+(use-package org 
+  :hook (org-mode . org-indent-mode)
+  :custom
+  (org-auto-align-tags nil)
+  (org-tags-column 0)
+  (org-hide-emphasis-markers t)
+  (org-pretty-entities t)
+  (org-agenda-tags-column 0)
+  (org-ellipsis "…")
+  (org-catch-invisible-edits 'show-and-error)
+  (org-special-ctrl-a/e t)
+  (org-insert-heading-respect-content t)
+
+  (org-fontify-quote-and-verse-blocks t)
+
+  :config
+  (dolist (face '(org-block
+		  org-quote
+		  org-verse))
+    (set-face-attribute face nil
+			:background "#080808"
+			:extend t))
+
+  (dolist (face '(org-block-begin-line
+		  org-block-end-line))
+    (set-face-attribute face nil
+			:background "#202020"
+			:foreground "#666666"
+			:extend t))
+  (set-face-attribute 'org-document-title nil
+		      :inherit 'variable-pitch
+		      :height 1.50
+		      :weight 'bold)
+
+  (set-face-attribute 'org-level-1 nil
+		      :inherit 'variable-pitch
+		      :height 1.25
+		      :weight 'bold)
+
+  (set-face-attribute 'org-level-2 nil
+		      :inherit 'variable-pitch
+		      :height 1.125
+		      :weight 'semibold)
+
+  (dolist (face '(org-level-3
+		  org-level-4
+		  org-level-5
+		  org-level-6
+		  org-level-7
+		  org-level-8))
+    (set-face-attribute face nil
+			:inherit 'variable-pitch
+			:height 1.0
+			:weight 'semibold)))
+
+(use-package org-modern
+  :hook (org-mode . org-modern-mode)
+  :config
+  (set-face-attribute 'org-modern-symbol nil
+		      :inherit 'fixed-pitch
+		      :foreground "#666666"
+		      :weight 'normal)
+
+  (set-face-attribute 'org-modern-block-name nil
+		      :inherit 'fixed-pitch
+		      :foreground "#666666"
+		      :weight 'normal)
+  (setq org-modern-star '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
+        org-modern-table-vertical 1
+        org-modern-table-horizontal 0.2
+        org-modern-list '((43 . "➤")
+                          (45 . "–")
+                          (42 . "•"))
+        org-modern-todo-faces
+        '(("TODO" :inverse-video t :inherit org-todo)
+          ("PROJ" :inverse-video t :inherit +org-todo-project)
+          ("STRT" :inverse-video t :inherit +org-todo-active)
+          ("[-]"  :inverse-video t :inherit +org-todo-active)
+          ("HOLD" :inverse-video t :inherit +org-todo-onhold)
+          ("WAIT" :inverse-video t :inherit +org-todo-onhold)
+          ("[?]"  :inverse-video t :inherit +org-todo-onhold)
+          ("KILL" :inverse-video t :inherit +org-todo-cancel)
+          ("NO"   :inverse-video t :inherit +org-todo-cancel))
+        org-modern-footnote
+        (cons nil (cadr org-script-display))
+        org-modern-block-fringe nil
+        org-modern-block-name
+        '((t . t)
+          ("src" "» " "«")
+          ("example" "»–" "–«")
+          ("quote" "❝" "❞")
+          ("export" "⏩" "⏪"))
+        org-modern-progress nil
+        org-modern-priority nil
+	org-modern-horizontal-rule (make-string 36 ?\u2500)
+        org-modern-keyword
+        `((t . t)
+	  ("title"    . ,(propertize "𝙏  " 'face '(fixed-pitch shadow)))
+          ("subtitle" . ,(propertize "𝙩  " 'face '(fixed-pitch shadow)))
+          ("author"   . ,(propertize "𝘼  " 'face '(fixed-pitch shadow)))
+          ("email"    . ,(propertize "  " 'face '(fixed-pitch shadow)))
+          ("date"     . ,(propertize "𝘿  " 'face '(fixed-pitch shadow)))
+          ("property" . ,(propertize "󰠳  " 'face '(fixed-pitch shadow)))
+          ("options"  . ,(propertize "󰘵  "
+                                     'face '(fixed-pitch shadow)
+                                     'display '(height 0.75)))
+          ("startup"  . ,(propertize "⏻  " 'face '(fixed-pitch shadow)))
+          ("macro" . "𝓜 ")
+          ("bind" . "󰌷 ")
+          ("bibliography" . " ")
+          ("print_bibliography" . "󰌱 ")
+          ("cite_export" . "⮭ ")
+          ("print_glossary" . "󰌱ᴬᶻ ")
+          ("glossary_sources" . "󰒻 ")
+          ("include" . "⇤ ")
+          ("setupfile" . "⇚ ")
+          ("html_head" . "🅷 ")
+          ("html" . "🅗 ")
+          ("accent_color" . " ")
+          ("latex_class" . "🄻 ")
+          ("latex_class_options" . "🄻󰒓 ")
+          ("latex_header" . "🅻 ")
+          ("latex_header_extra" . "🅻⁺ ")
+          ("latex" . "🅛 ")
+          ("beamer_theme" . "🄱 ")
+          ("beamer_color_theme" . "🄱󰏘 ")
+          ("beamer_font_theme" . "🄱𝐀 ")
+          ("beamer_header" . "🅱 ")
+          ("beamer" . "🅑 ")
+          ("attr_latex" . "🄛 ")
+          ("attr_html" . "🄗 ")
+          ("attr_org" . "⒪ ")
+          ("call" . "󰜎 ")
+          ("name" . "⁍ ")
+          ("header" . "› ")
+          ("caption" . "☰ ")
+          ("results" . "🠶 ")))
+  (setq org-modern-keyword
+	(mapcar
+	 (lambda (entry)
+           (if (and (consp entry)
+                    (stringp (cdr entry)))
+	       (cons
+		(car entry)
+		(propertize
+		 (copy-sequence (cdr entry))
+		 'face
+		 '(:inherit fixed-pitch
+			    :foreground "#666666")))
+             entry))
+	 org-modern-keyword)))
+
+(use-package olivetti
+  :hook (org-mode . olivetti-mode)
+  :custom
+  (olivetti-body-width 100)
+  (olivetti-style t)
+
+  :config
+  (defun dysthesis/olivetti-match-buffer-background (&rest _)
+    (set-face-attribute
+     'olivetti-fringe nil
+     :background
+     (if (facep 'solaire-default-face)
+         (face-background 'solaire-default-face nil t)
+       (face-background 'default nil t))))
+
+  (dysthesis/olivetti-match-buffer-background)
+
+  (add-hook 'enable-theme-functions
+            #'dysthesis/olivetti-match-buffer-background))
+
+
+(use-package mixed-pitch
+  :hook (org-mode . mixed-pitch-mode)
+
+  :config
+  (dolist (face
+           '(org-block
+             org-block-begin-line
+             org-block-end-line
+             org-code
+             org-verbatim
+             org-table
+
+             org-meta-line
+             org-document-info-keyword
+             org-document-info
+             org-special-keyword
+             org-drawer
+             org-property-value
+             org-tag
+             org-todo
+             org-done
+             org-date
+             org-footnote
+
+             org-checkbox
+             org-priority
+             org-ellipsis
+             org-link))
+    (add-to-list 'mixed-pitch-fixed-pitch-faces face)))

@@ -90,6 +90,7 @@
 
       ouroborosTheme = mkExtraPkgs "ouroboros" (p: [p.modus-themes]);
       typstTsMode = mkExtraPkgs "typst-ts-mode" (_: []);
+      orgModernIndent = mkExtraPkgs "org-modern-indent" (_: []);
       majutsu = mkExtraPkgs "majutsu" (p:
         with p; [
           magit
@@ -127,6 +128,7 @@
           inherit majutsu;
           ouroboros = ouroborosTheme;
           typst-ts-mode = typstTsMode;
+          org-modern-indent = orgModernIndent;
           use-package = builtinUsePackage;
         };
         extraEmacsPackages = _:
@@ -155,6 +157,7 @@
                 grammars
                 ouroborosTheme
                 typstTsMode
+                orgModernIndent
                 majutsu
                 ;
               unwrappedEmacs = emacs;

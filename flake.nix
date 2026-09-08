@@ -36,5 +36,9 @@
       url = "git+https://codeberg.org/meow_king/typst-ts-mode";
       flake = false;
     };
+    org-modern-indent = {
+      url = "github:jdtsmith/org-modern-indent";
+      flake = false;
+    };
   };
 }
