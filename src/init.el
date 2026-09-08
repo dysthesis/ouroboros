@@ -1457,7 +1457,54 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package org 
   :hook (org-mode . org-indent-mode)
+  :preface
+  (defun dysthesis/org-file (file)
+    (expand-file-name file org-directory))
+
   :custom
+  (org-directory "~/Documents/Org/")
+
+  (org-agenda-files
+   (mapcar #'dysthesis/org-file
+           '("inbox.org"
+             "tasks.org")))
+
+  (org-default-notes-file
+   (dysthesis/org-file "inbox.org"))
+
+  (org-attach-id-dir
+   (dysthesis/org-file ".attach/"))
+
+  (org-todo-keywords
+   '((sequence
+      "TODO(t)"
+      "NEXT(n)"
+      "WAIT(w@/!)"
+      "|"
+      "DONE(d!)"
+      "CANCELLED(c@)")))
+  (org-log-done 'time)
+  (org-log-into-drawer t)
+  (org-refile-targets
+   '((nil :maxlevel . 3)
+     (org-agenda-files :maxlevel . 3)))
+
+  (org-agenda-window-setup 'current-window)
+  (org-agenda-skip-unavailable-files t)
+
+  (org-agenda-span 10)
+  (org-agenda-start-on-weekday nil)
+  (org-agenda-start-day "-3d") ;; 3 days of recent context + next 7 days
+  ;; Let the source language control indentation.
+  (org-src-preserve-indentation t)
+  (org-src-tab-acts-natively t)
+  (org-edit-src-content-indentation 0)
+
+  ;; I prefer not destroying the current Org window.
+  (org-src-window-setup 'other-window)
+  (org-export-with-smart-quotes t)
+  (org-html-validation-link nil)
+  (org-latex-prefer-user-labels t)
   (org-auto-align-tags nil)
   (org-tags-column 0)
   (org-hide-emphasis-markers t)
@@ -1471,6 +1518,25 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (org-fontify-quote-and-verse-blocks t)
 
   :config
+  (setq
+   org-capture-templates
+   `(("t" "Todo" entry
+      (file+headline
+       ,(expand-file-name "inbox.org" org-directory)
+       "Inbox")
+      "* TODO %?\n%U\n%i\n%a")
+
+     ("n" "Note" entry
+      (file+headline
+       ,(expand-file-name "inbox.org" org-directory)
+       "Notes")
+      "* %?\n%U\n%i\n%a")
+
+     ("j" "Journal" entry
+      (file+olp+datetree
+       ,(expand-file-name "journal.org" org-directory))
+      "* %U %?\n%i")))
+
   (dolist (face '(org-block
 		  org-quote
 		  org-verse))
