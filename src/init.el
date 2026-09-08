@@ -104,6 +104,43 @@
 
 (use-package ouroboros
   :config
+  (setq window-divider-default-bottom-width 0
+	window-divider-default-right-width 1
+	window-divider-default-places 'right-only)
+
+  (window-divider-mode 1)
+  (defun dysthesis/style-mode-line (&rest _)
+    (let ((bg (face-attribute 'default :background nil t)))
+      (dolist (face '(mode-line mode-line-active mode-line-inactive))
+	(set-face-attribute face nil
+                            :background bg
+                            :box nil
+                            :underline nil
+                            :overline "#2a2a2a"))))
+
+  (dysthesis/style-mode-line)
+
+  ;; Reapply after themes, since themes can overwrite these faces.
+  (add-hook 'enable-theme-functions #'dysthesis/style-mode-line)
+  (let ((bg (face-background 'default))
+	(border "#333333"))
+    (set-face-attribute 'mode-line nil
+			:background bg
+			:box nil
+			:underline nil
+			:overline border)
+
+    (set-face-attribute 'mode-line-inactive nil
+			:background bg
+			:box nil
+			:underline nil
+			:overline border))
+  (dolist (face '(mode-line mode-line-active mode-line-inactive))
+    (set-face-attribute face nil
+			:background (face-background 'default)
+			:box nil
+			:underline nil
+			:overline "#222222"))
   (modify-all-frames-parameters
    '((right-divider-width . 2)
      (internal-border-width . 20)))
@@ -1461,8 +1498,12 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (defun dysthesis/org-file (file)
     (expand-file-name file org-directory))
 
+  :init
+  (setq org-directory
+	(file-name-as-directory
+	 (expand-file-name "~/Documents/Org")))
+
   :custom
-  (org-directory "~/Documents/Org/")
 
   (org-agenda-files
    (mapcar #'dysthesis/org-file
@@ -1727,3 +1768,60 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
              org-ellipsis
              org-link))
     (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
+
+(use-package org-roam
+  :init
+  (setq org-roam-directory
+        (file-truename
+         (expand-file-name "Roam/" org-directory)))
+
+  :custom
+  (org-roam-completion-everywhere t)
+
+  ;; Prefer the faster external searchers first
+  (org-roam-list-files-commands '(fd fdfind rg find))
+
+  ;; Completion display
+  (org-roam-node-display-template
+   (concat "${title:*} "
+           (propertize "${tags:20}" 'face 'org-tag)))
+
+  :config
+  (org-roam-db-autosync-mode))
+
+
+(use-package citar
+  :init
+  (setq org-cite-global-bibliography
+        (list
+         (expand-file-name
+          "bibliography/references.bib"
+          org-directory))
+
+        ;; Use the same bibliography for Citar and Org-cite.
+        citar-bibliography org-cite-global-bibliography
+
+        org-cite-insert-processor 'citar
+        org-cite-follow-processor 'citar
+        org-cite-activate-processor 'citar)
+
+  :hook
+  (org-mode . citar-capf-setup))
+
+(use-package citar-embark
+  :after (citar embark)
+  :config
+  (citar-embark-mode))
+
+(use-package citar-org-roam
+  :after (citar org-roam)
+
+  :custom
+  (citar-org-roam-subdir "Literature")
+
+  ;; Title shown by Org-roam/Citar
+  (citar-org-roam-note-title-template
+   "${author editor} (${date year issued}) — ${title}")
+
+  :config
+  (citar-org-roam-mode))
