@@ -1792,18 +1792,20 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package citar
   :init
-  (setq org-cite-global-bibliography
-        (list
-         (expand-file-name
-          "bibliography/references.bib"
-          org-directory))
+  (setq
+   dysthesis/zotero-dir "~/Zotero/"
+   org-cite-global-bibliography
+   (list
+    (expand-file-name
+     "References.bib"
+     dysthesis/zotero-dir))
 
-        ;; Use the same bibliography for Citar and Org-cite.
-        citar-bibliography org-cite-global-bibliography
+   ;; Use the same bibliography for Citar and Org-cite.
+   citar-bibliography org-cite-global-bibliography
 
-        org-cite-insert-processor 'citar
-        org-cite-follow-processor 'citar
-        org-cite-activate-processor 'citar)
+   org-cite-insert-processor 'citar
+   org-cite-follow-processor 'citar
+   org-cite-activate-processor 'citar)
 
   :hook
   (org-mode . citar-capf-setup))
