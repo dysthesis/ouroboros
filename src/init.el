@@ -1706,6 +1706,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
              org-verbatim
              org-table
 
+	     org-date
+	     org-date-selected
+	     org-modern-label
+
              org-meta-line
              org-document-info-keyword
              org-document-info
